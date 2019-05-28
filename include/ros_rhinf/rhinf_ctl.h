@@ -24,8 +24,8 @@ namespace rh
 			bool update(double state, double reference, int t);
 			bool load_param(std::vector<std_msgs::Float64> params);
 		private:
-			Matrix an, bn, fn, f, kdis;
-			Matrix xant;
+			rh::Matrix an, bn, fn, f, kdis;
+			rh::Matrix xant;
 			double uant = 0;
 			double umax = 1;
 
@@ -34,6 +34,5 @@ namespace rh
 			double usat(double umax, double u);
 	};
 }
-
 
 #endif

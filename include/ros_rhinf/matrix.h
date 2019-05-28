@@ -14,6 +14,9 @@ namespace rh
 			int getRows() {return m;}
 			int getCols() {return n;}
 			double** getData() {return data;}
+			void setRows(int rows) {m = rows;}
+			void setCols(int cols) {n = cols;}	
+			void setData(double** d) {data = d;}
                         void print_matrix(Matrix &A, std::string title);
                         double *matrix_to_f_array(Matrix &A);
                         double *matrix_to_array(Matrix &A);

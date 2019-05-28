@@ -22,7 +22,7 @@ namespace rh
 			rhinf_ctl();
 			~rhinf_ctl();
 			double update(rh::Matrix &state, rh::Matrix &reference, int t);
-			bool load_param(std::vector<std::vector<std_msgs::Float64>> params, double umax);
+			bool load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double umax);
 		private:
 			rh::Matrix an, bn, fn, f, kdis;
 			rh::Matrix xant;
@@ -32,6 +32,8 @@ namespace rh
 			float snrm2(int N, float *a, int inca) {return snrm2_(&N,a,&inca);};
 			double* dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC);
 			double usat(double umax, double u);
+			double* extract_data(std::vector<std_msgs::Float64> d); 
+			int* extract_dims(std::vector<std::vector<int>> dims);
 	};
 }
 

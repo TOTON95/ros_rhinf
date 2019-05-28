@@ -41,7 +41,7 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 	}
 }
 
-bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> params, double _umax)
+bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double _umax)
 {
 	std::vector<std_msgs::Float64> AN,BN,FN,F,KDIS;
 	
@@ -51,7 +51,47 @@ bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> param
 	F = params[3];
 	KDIS = params[4];
 
+	double *_AN,*_BN,*_FN,*_F,*_KDIS;
+	
+	_AN = rh::rhinf_ctl::extract_data(AN);
+	_BN = rh::rhinf_ctl::extract_data(BN);
+	_FN = rh::rhinf_ctl::extract_data(FN);
+	_F = rh::rhinf_ctl::extract_data(F);
+	_KDIS = rh::rhinf_ctl::extract_data(KDIS);
+
+	int *dim = extract_dims(dims);
+	
+	an = rh::Matrix(dim[0],dim[1],_AN);
+	bn = rh::Matrix(dim[2],dim[3],_BN);
+	fn = rh::Matrix(dim[4],dim[5],_FN);
+	f = rh::Matrix(dim[6],dim[7],_F);
+	kdis = rh::Matrix(dim[8],dim[9],_KDIS);
+	
 	umax = _umax;
+}
+
+double* rh::rhinf_ctl::extract_data(std::vector<std_msgs::Float64> d)
+{
+	double *data = new double[d.size()];
+	for(int i=0;i<d.size();i++)
+	{
+		data[i] = d.at(i).data;
+	}	
+	return data;
+}
+
+int* rh::rhinf_ctl::extract_dims(std::vector<std::vector<int>> dims)
+{
+	int* dimensions = new int[dims.size()*2];
+	int c = 0;
+	for(int i=0; i<dims.size(); i++)
+	{
+		for(int j = 0; j<dims[i].size(); j++)
+		{
+			dimensions[c] = dims[i][j];
+			c++;	
+		}
+	}
 }
 
 double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC)
@@ -84,5 +124,4 @@ double rh::rhinf_ctl::usat(double umax, double u)
         if(n_u < -umax)
                 n_u = -umax;
         return n_u;
-
 }

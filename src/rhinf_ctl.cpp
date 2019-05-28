@@ -21,9 +21,9 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
         }
         if (t%17==0)
 	{
-		/*rh::Matrix error = rh::sub_matrix(state,reference);
-		double *e = rh::Matrix::matrix_to_array(error);
-                float *e_abs = new float[error.getRows()*error.getCols()];
+		rh::Matrix error = rh::sub_matrix(state,reference);
+		double *e = rh::matrix_to_array(error);
+                /*float *e_abs = new float[error.getRows()*error.getCols()];
                 for(int j=0; j<(error.getRows()*error.getCols()); j++)
                 {
                         e_abs[j] = -1.1*abs((float)e[j]);

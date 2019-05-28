@@ -85,7 +85,7 @@ void print_matrix(rh::Matrix &A, std::string title)
 	std::cout<<std::endl;
 }
 
-double* rh::Matrix::matrix_to_f_array(rh::Matrix &A)
+double* rh::matrix_to_f_array(rh::Matrix &A)
 {
 	double *result = new double[A.getRows()*A.getCols()];
         int c = 0;
@@ -100,7 +100,7 @@ double* rh::Matrix::matrix_to_f_array(rh::Matrix &A)
         return result;
 }
 
-double* rh::Matrix::matrix_to_array(rh::Matrix &A)
+double* rh::matrix_to_array(rh::Matrix &A)
 {
 	double *result = new double[A.getRows()*A.getCols()];
         int c = 0;

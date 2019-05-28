@@ -50,13 +50,13 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
                 {
                         bn_uant[o] = _bn[o]*usat(umax,uant);
                 }
-                Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
+		rh::Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
 		
 		//x-an_xant
-                Matrix x_an_xant = rh::sub_matrix(state,an_xant);
+		rh::Matrix x_an_xant = rh::sub_matrix(state,an_xant);
 
 		//dls
-                Matrix dls = rh::sub_matrix(x_an_xant,m_bn_uant);
+		rh::Matrix dls = rh::sub_matrix(x_an_xant,m_bn_uant);
 
 		//Kdls@dls
                 double *_kdls = rh::matrix_to_array(kdis);

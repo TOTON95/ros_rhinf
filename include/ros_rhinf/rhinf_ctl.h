@@ -21,7 +21,7 @@ namespace rh
 		public:
 			rhinf_ctl();
 			~rhinf_ctl();
-			bool update(double state, double reference, int t);
+			double update(rh::Matrix &state, rh::Matrix &reference, int t);
 			bool load_param(std::vector<std_msgs::Float64> params);
 		private:
 			rh::Matrix an, bn, fn, f, kdis;

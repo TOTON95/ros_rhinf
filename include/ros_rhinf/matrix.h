@@ -2,6 +2,7 @@
 #define _MATRIX_H_
 
 #include <string>
+#include <iostream>
 
 namespace rh
 {
@@ -9,7 +10,10 @@ namespace rh
 	{
 		public:
 			Matrix();
-			Matrix(int m, int n, double **data, bool fortran=false);
+			Matrix(int rows, int cols, double *da, bool fortran=false);
+			int getRows() {return m;}
+			int getCols() {return n;}
+			double** getData() {return data;}
                         Matrix sum_matrix(Matrix &A, Matrix &B);
                         Matrix sub_matrix(Matrix &A, Matrix &B);
                         void print_matrix(Matrix &A, std::string title);

@@ -13,7 +13,14 @@
 
 namespace rh
 {
-
+	class rhinfObject
+	{
+		public:
+			rhinfObject();
+		private:
+			void calc();
+			void getParams();
+			void print_param();
+	};	
 }
-
 #endif

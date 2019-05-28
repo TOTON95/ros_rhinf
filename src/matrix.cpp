@@ -26,7 +26,7 @@ rh::Matrix::Matrix(int rows, int cols, double *da, bool fortran)
 	data = d;
 }
 
-rh::Matrix rh::Matrix::sum_matrix(rh::Matrix &A, rh::Matrix &B)
+rh::Matrix rh::sum_matrix(rh::Matrix &A, rh::Matrix &B)
 {
 	if(A.getRows() == B.getRows() && A.getCols() == B.getCols())
         {
@@ -48,19 +48,19 @@ rh::Matrix rh::Matrix::sum_matrix(rh::Matrix &A, rh::Matrix &B)
 
 }
 
-rh::Matrix rh::Matrix::sub_matrix(rh::Matrix &A, rh::Matrix &B)
+rh::Matrix rh::sub_matrix(rh::Matrix &A, rh::Matrix &B)
 {
-	        if(A.getRows() == B.getRows() && A.getCols() == B.getCols())
-        {
-                double *result = new double[A.getRows()*A.getCols()];
-                int c = 0;
-                for(int i=0; i < A.getRows();i++)
-                {
-                        for(int j=0;j < A.getCols();j++)
-                        {
-                                result[c] = A.getData()[i][j] - B.getData()[i][j];
-                                c++;
-                        }
+	if(A.getRows() == B.getRows() && A.getCols() == B.getCols())
+	{
+		double *result = new double[A.getRows()*A.getCols()];
+		int c = 0;
+		for(int i=0; i < A.getRows();i++)
+		{
+			for(int j=0;j < A.getCols();j++)
+			{
+				result[c] = A.getData()[i][j] - B.getData()[i][j];
+				c++;
+			}
                 }
 		rh::Matrix r = rh::Matrix(A.getRows(),A.getCols(),result);
                 return r;

@@ -3,6 +3,7 @@
 
 rh::rhinf_ctl::rhinf_ctl()
 {
+
 }
 
 rh::rhinf_ctl::~rhinf_ctl()
@@ -20,7 +21,23 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
         }
         if (t%17==0)
 	{
-		rh::Matrix error = rh::Matrix::sub_matrix(state, reference);
+		/*rh::Matrix error = rh::sub_matrix(state,reference);
+		double *e = rh::Matrix::matrix_to_array(error);
+                float *e_abs = new float[error.getRows()*error.getCols()];
+                for(int j=0; j<(error.getRows()*error.getCols()); j++)
+                {
+                        e_abs[j] = -1.1*abs((float)e[j]);
+                }
+                float *e_exp = new float[error.getRows()*error.getCols()];
+                for(int j=0; j<(error.getRows()*error.getCols()); j++)
+                {
+                        e_exp[j] = exp(e_abs[j]) - 1;
+		}
+		double myUN = (double)(-3.6386 * snrm2(error.getRows()*error.getCols(),e_exp,1));
+		double *_an = rh::Matrix::matrix_to_array(an);
+		double *_xant = rh::Matrix::matrix_to_array(xant);
+		int an_xant_r;
+                int an_xant_c;*/
 	}
 }
 

@@ -41,8 +41,17 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 	}
 }
 
-bool rh::rhinf_ctl::load_param(std::vector<std_msgs::Float64> params)
+bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> params, double _umax)
 {
+	std::vector<std_msgs::Float64> AN,BN,FN,F,KDIS;
+	
+	AN = params[0];
+	BN = params[1];
+	FN = params[2];
+	F = params[3];
+	KDIS = params[4];
+
+	umax = _umax;
 }
 
 double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC)

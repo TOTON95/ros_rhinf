@@ -58,6 +58,25 @@ void rhinfObject::calc()
 {
 	if(need_to_refresh)
 	{
+
+		//dt calculation
+		if(!prev_t.isZero())
+		{
+			dt = ros::Time::now() - prev_t;
+			prev_t = ros::Time::now();
+
+			if(0 == dt.toSec())
+			{
+				ROS_ERROR("dt is 0, therefore, time hasn't changed at the time: %f", ros::Time::now().toSec());
+				return;
+			}
+		}
+		else
+		{
+			ROS_INFO("prev_t is 0, nothing to change");
+			prev_t = ros::Time::now();
+			return;
+		}
 		need_to_refresh = false;
 	}
 }

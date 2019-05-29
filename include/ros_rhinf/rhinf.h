@@ -21,6 +21,19 @@ namespace rh
 			void calc();
 			void getParams();
 			void print_param();
+
+			double _state;
+			double _control_effort = 0;
+			double _setpoint = 0;
+			bool need_to_refresh = false;
+
+			ros::Time prev_t;
+			ros::Duration dt;
+
+			ros::Publisher _control_effort_pub;
+			std::string s_ctl, s_state, s_ref;
+
+			std_msgs::Float64 ctl_msg, state_msg;	
 	};	
 }
 #endif

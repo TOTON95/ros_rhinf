@@ -1,9 +1,9 @@
 #include <ros_rhinf/rhinf_ctl.h>
 
 
-rh::rhinf_ctl::rhinf_ctl()
+rh::rhinf_ctl::rhinf_ctl(double sample_time, double samples)
 {
-
+	
 }
 
 rh::rhinf_ctl::~rhinf_ctl()

@@ -56,6 +56,10 @@ rhinfObject::rhinfObject()
 
 void rhinfObject::calc()
 {
+	if(need_to_refresh)
+	{
+		need_to_refresh = false;
+	}
 }
 
 void rhinfObject::getParams()

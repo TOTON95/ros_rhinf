@@ -13,12 +13,48 @@ rhinfObject::rhinfObject()
 		sleep(1);	
 	}
 	
+	//Get parameters
 	n_priv.param<double>("downsampling",_downsampling, 17);
 	n_priv.param<double>("sample_time", _sample_time,0.001);
 	n_priv.param<double>("saturation", _saturation, 1);
 	n_priv.param<std::string>("topic_controller", s_ctl, "control_effort");
 	n_priv.param<std::string>("topic_state", s_state, "state");
 	n_priv.param<std::string>("topic_ref", s_ref, "reference");
+
+	if(!n_priv.getParam("AN", an_param) || !n_priv.getParam("AN_dim", d_an_param))
+	{
+		ROS_ERROR_STREAM("Failed to import AN parameters. Terminating.");
+		ros::shutdown();
+		exit(EXIT_FAILURE);
+	}
+
+	if(!n_priv.getParam("BN", bn_param) || !n_priv.getParam("BN_dim", d_bn_param))
+	{
+		ROS_ERROR_STREAM("Failed to import BN parameters. Terminating.");
+		ros::shutdown();
+		exit(EXIT_FAILURE);
+	}
+
+	if(!n_priv.getParam("FN", bn_param) || !n_priv.getParam("FN_dim", d_fn_param))
+	{
+		ROS_ERROR_STREAM("Failed to import FN parameters. Terminating.");
+		ros::shutdown();
+		exit(EXIT_FAILURE);
+	}
+
+	if(!n_priv.getParam("F", bn_param) || !n_priv.getParam("F_dim", d_f_param))
+	{
+		ROS_ERROR_STREAM("Failed to import F parameters. Terminating.");
+		ros::shutdown();
+		exit(EXIT_FAILURE);
+	}
+
+	if(!n_priv.getParam("KDIS", bn_param) || !n_priv.getParam("KDIS_dim", d_kdis_param))
+	{
+		ROS_ERROR_STREAM("Failed to import KDIS parameters. Terminating.");
+		ros::shutdown();
+		exit(EXIT_FAILURE);
+	}
 
 	//Print Parameters
 	print_param();
@@ -58,7 +94,6 @@ void rhinfObject::calc()
 {
 	if(need_to_refresh)
 	{
-
 		//dt calculation
 		if(!prev_t.isZero())
 		{

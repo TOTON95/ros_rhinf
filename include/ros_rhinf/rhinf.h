@@ -19,13 +19,16 @@ namespace rh
 		public:
 			rhinfObject();
 		private:
+			//Methods
 			void calc();
 			void getParams();
 			void print_param();
 
+			//Callbacks
 			void stateCallback(const std_msgs::Float64& state_msg);
 			void refCallback(const std_msgs::Float64& ref_msg);
 
+			//Parameters
 			double _state;
 			double _control_effort = 0;
 			double _reference = 0;
@@ -33,10 +36,22 @@ namespace rh
 			double _downsampling;
 			double _sample_time;
 			double _saturation;
+			std::vector<double> an_param;
+			std::vector<double> bn_param;
+			std::vector<double> fn_param;
+			std::vector<double> f_param;
+			std::vector<double> kdis_param;
+			std::vector<int> d_an_param;
+			std::vector<int> d_bn_param;
+			std::vector<int> d_fn_param;
+			std::vector<int> d_f_param;
+			std::vector<int> d_kdis_param;
 
+			//Time var
 			ros::Time prev_t;
 			ros::Duration dt;
 
+			//ROS I/O
 			ros::Publisher _control_effort_pub;
 			std::string s_ctl, s_state, s_ref;
 

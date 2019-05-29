@@ -119,6 +119,10 @@ void rhinfObject::calc()
 			return;
 		}
 
+		Matrix m_state(1,state.size(),vector2array(state));
+		Matrix m_ref(1,reference.size(),vector2array(state));
+
+
 
 		exec_t = ros::Time::now();
 		sleep_t = sampling_t - (exec_t - init_t);
@@ -198,6 +202,9 @@ void rhinfObject::print_param()
 	explore_vector(kdis_param);
 	std::cout<<"Dimensions: "<<std::endl;
 	explore_vector(d_kdis_param);
+	std::cout<<"Sampling time: "<<_sample_time<<std::endl;
+	std::cout<<"Downsampling: "<<_downsampling<<std::endl;
+	std::cout<<"Saturation: "<<_saturation<<std::endl;
 }
 
 void rhinfObject::stateCallback(const std_msgs::Float64MultiArray& state_msg)

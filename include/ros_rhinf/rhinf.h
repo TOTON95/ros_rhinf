@@ -61,8 +61,11 @@ namespace rh
 
 			//Time var
 			ros::Time prev_t;
+			ros::Duration sampling_t;
 			ros::Duration dt;
 			ros::Time exec_t;
+			ros::Duration sleep_t;
+			unsigned long int _it = 0;
 			
 
 			//ROS I/O

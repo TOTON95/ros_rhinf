@@ -114,3 +114,12 @@ double* rh::matrix_to_array(rh::Matrix &A)
         }
         return result;
 }
+
+double* rh::vector2array(std::vector<double> const& vec)
+{
+	double* result = new double[vec.size()];
+	for(int i=0;i<vec.size();i++)
+		result[i] = vec[i];
+	return result;
+}
+

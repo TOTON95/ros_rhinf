@@ -2,6 +2,7 @@
 #define _MATRIX_H_
 
 #include <string>
+#include <vector>
 #include <iostream>
 
 namespace rh
@@ -28,6 +29,7 @@ namespace rh
 	Matrix sub_matrix(Matrix &A, Matrix &B);
 	double *matrix_to_f_array(Matrix &A);
 	double *matrix_to_array(Matrix &A);
+	double *vector2array(std::vector<double> const& vec);
 }
 
 #endif

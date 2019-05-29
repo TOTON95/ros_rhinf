@@ -56,8 +56,12 @@ rhinfObject::rhinfObject()
 		exit(EXIT_FAILURE);
 	}
 
+	//Setting sampling time
+	sampling_t = ros::Duration(_sample_time);
+
 	//Print Parameters
 	print_param();
+
 
 	//Start controller
 	rhinf_ctl ctl;
@@ -76,7 +80,6 @@ rhinfObject::rhinfObject()
 		exit(EXIT_FAILURE);
 	}
 
-
 	//Wait for incoming messages
 	while( ros::ok() && !ros::topic::waitForMessage<std_msgs::Float64>(s_ref, ros::Duration(10.)))
 		ROS_WARN_STREAM("Waiting for first reference message");
@@ -88,7 +91,7 @@ rhinfObject::rhinfObject()
 	{
 		calc();
 		ros::spinOnce();
-		ros::Duration(_sample_time).sleep();
+		sleep_t.sleep();
 	}
 };
 
@@ -96,6 +99,7 @@ void rhinfObject::calc()
 {
 	if(need_to_refresh)
 	{
+		ros::Time init_t = prev_t;
 		//dt calculation
 		if(!prev_t.isZero())
 		{
@@ -108,6 +112,17 @@ void rhinfObject::calc()
 				return;
 			}
 		}
+		else
+		{
+			ROS_INFO("prev_t is 0, continue...");
+			prev_t = ros::Time::now();
+			return;
+		}
+
+
+		exec_t = ros::Time::now();
+		sleep_t = sampling_t - (exec_t - init_t);
+		_it++;
 	}
 	need_to_refresh = false;
 }

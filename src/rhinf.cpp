@@ -15,7 +15,7 @@ rhinfObject::rhinfObject()
 	
 	//Get parameters
 	n_priv.param<double>("downsampling",_downsampling, 17);
-	n_priv.param<double>("sample_time", _sample_time,0.001);
+	n_priv.param<double>("sample_time", _sample_time,0.01);
 	n_priv.param<double>("saturation", _saturation, 1);
 	n_priv.param<std::string>("topic_controller", s_ctl, "control_effort");
 	n_priv.param<std::string>("topic_state", s_state, "state");
@@ -58,6 +58,10 @@ rhinfObject::rhinfObject()
 
 	//Print Parameters
 	print_param();
+
+	//Start controller
+	rhinf_ctl ctl;
+	setParams(ctl);
 
 	//Init publishers and subscribers
 	_control_effort_pub = node.advertise<std_msgs::Float64>(s_ctl, 1);
@@ -118,6 +122,7 @@ void rhinfObject::calc()
 
 void rhinfObject::setParams(rh::rhinf_ctl &ctl)
 {
+	//Coefficients
 	std::vector<std::vector<std_msgs::Float64>> params;
 	std::vector<std_msgs::Float64> ros_an;
 	std::vector<std_msgs::Float64> ros_bn;
@@ -137,6 +142,20 @@ void rhinfObject::setParams(rh::rhinf_ctl &ctl)
 	params.push_back(ros_f);
 	params.push_back(ros_kdis);
 
+	//Dimensions
+	std::vector<std::vector<int>> dims;
+
+	dims.push_back(d_an_param);
+	dims.push_back(d_bn_param);
+	dims.push_back(d_fn_param);
+	dims.push_back(d_f_param);
+	dims.push_back(d_kdis_param);
+
+
+	//Controller
+	ctl.load_param(params,dims,_saturation,_downsampling);
+
+	std::cout<<std::endl<<"PARAMETERS LOADED"<<std::endl;
 }
 
 void rhinfObject::insert_data(std::vector<std_msgs::Float64> ros_vec, std::vector<double> const& vec)

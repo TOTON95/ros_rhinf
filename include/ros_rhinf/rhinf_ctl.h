@@ -19,16 +19,17 @@ namespace rh
 	class rhinf_ctl
 	{
 		public:
-			rhinf_ctl(double sample_time, double samples);
+			rhinf_ctl();
 			~rhinf_ctl();
 			double update(rh::Matrix &state, rh::Matrix &reference, int t);
-			bool load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double umax);
+			bool load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double umax, int ds);
 
 		private:
 			rh::Matrix an, bn, fn, f, kdis;
 			rh::Matrix xant;
 			double uant = 0;
 			double umax = 1;
+			int downsampling = 1;
 
 			float snrm2(int N, float *a, int inca) {return snrm2_(&N,a,&inca);};
 			double* dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC);

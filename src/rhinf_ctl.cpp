@@ -1,7 +1,7 @@
 #include <ros_rhinf/rhinf_ctl.h>
 
 
-rh::rhinf_ctl::rhinf_ctl(double sample_time, double downsampling)
+rh::rhinf_ctl::rhinf_ctl()
 {
 	
 }
@@ -98,7 +98,7 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 	}
 }
 
-bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double _umax)
+bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double _umax, int ds)
 {
 	std::vector<std_msgs::Float64> AN,BN,FN,F,KDIS;
 	
@@ -125,6 +125,7 @@ bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> param
 	kdis = rh::Matrix(dim[8],dim[9],_KDIS);
 	
 	umax = _umax;
+	downsampling = ds;
 }
 
 double* rh::rhinf_ctl::extract_data(std::vector<std_msgs::Float64> d)

@@ -21,12 +21,23 @@ namespace rh
 		private:
 			//Methods
 			void calc();
-			void getParams();
+			void setParams(rh::rhinf_ctl &ctl);
 			void print_param();
 
 			//Callbacks
 			void stateCallback(const std_msgs::Float64& state_msg);
 			void refCallback(const std_msgs::Float64& ref_msg);
+
+			//Template
+			template <typename T, typename A>
+				void explore_vector(std::vector<T,A> const& vec)
+				{
+					for(int i=0; i<vec.size();i++)
+					{
+						std::cout<<vec[i]<<" ";
+					}
+					std::cout<<std::endl;
+				}
 
 			//Parameters
 			double _state;

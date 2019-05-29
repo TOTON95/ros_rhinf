@@ -116,12 +116,35 @@ void rhinfObject::calc()
 	}
 }
 
-void rhinfObject::getParams()
+void rhinfObject::setParams(rh::rhinf_ctl &ctl)
 {
+	std::vector<std::vector<std_msgs::Float64>> params;
+
 }
 
 void rhinfObject::print_param()
 {
+	std::cout<<std::endl<<"RHINF PARAMETERS:"<<std::endl;
+	std::cout<<"AN: "<<std::endl;
+	explore_vector(an_param);
+	std::cout<<"Dimensions: "<<std::endl;
+	explore_vector(d_an_param);
+	std::cout<<"BN: "<<std::endl;
+	explore_vector(bn_param);
+	std::cout<<"Dimensions: "<<std::endl;
+	explore_vector(d_bn_param);
+	std::cout<<"FN: "<<std::endl;
+	explore_vector(fn_param);
+	std::cout<<"Dimensions: "<<std::endl;
+	explore_vector(d_fn_param);
+	std::cout<<"F: "<<std::endl;
+	explore_vector(f_param);
+	std::cout<<"Dimensions: "<<std::endl;
+	explore_vector(d_f_param);
+	std::cout<<"KDIS: "<<std::endl;
+	explore_vector(kdis_param);
+	std::cout<<"Dimensions: "<<std::endl;
+	explore_vector(d_kdis_param);
 }
 
 void rhinfObject::stateCallback(const std_msgs::Float64& state_msg)

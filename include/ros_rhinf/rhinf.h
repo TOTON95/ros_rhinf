@@ -66,6 +66,9 @@ namespace rh
 			ros::Time exec_t;
 			ros::Duration sleep_t;
 			unsigned long int _it = 0;
+
+			//Controller
+			rh::rhinf_ctl ctl;
 			
 
 			//ROS I/O

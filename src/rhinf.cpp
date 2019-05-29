@@ -63,8 +63,7 @@ rhinfObject::rhinfObject()
 	print_param();
 
 
-	//Start controller
-	rhinf_ctl ctl;
+	//Setup controller
 	setParams(ctl);
 
 	//Init publishers and subscribers
@@ -119,10 +118,17 @@ void rhinfObject::calc()
 			return;
 		}
 
-		Matrix m_state(1,state.size(),vector2array(state));
-		Matrix m_ref(1,reference.size(),vector2array(state));
+		//Creating state and reference structure
+		Matrix m_state(1,_state.size(),vector2array(_state));
+		Matrix m_ref(1,_reference.size(),vector2array(_state));
 
+		//Updating controller
+		double output = ctl.update(m_state, m_ref, _it);
 
+		//Send output signal
+		ctl_msg.data = output;
+		_control_effort_pub.publish(ctl_msg);
+			
 
 		exec_t = ros::Time::now();
 		sleep_t = sampling_t - (exec_t - init_t);

@@ -119,6 +119,34 @@ void rhinfObject::calc()
 void rhinfObject::setParams(rh::rhinf_ctl &ctl)
 {
 	std::vector<std::vector<std_msgs::Float64>> params;
+	std::vector<std_msgs::Float64> ros_an;
+	std::vector<std_msgs::Float64> ros_bn;
+	std::vector<std_msgs::Float64> ros_fn;
+	std::vector<std_msgs::Float64> ros_f;
+	std::vector<std_msgs::Float64> ros_kdis;
+
+	insert_data(ros_an, an_param);
+	insert_data(ros_bn, bn_param);
+	insert_data(ros_fn, fn_param);
+	insert_data(ros_f, f_param);
+	insert_data(ros_kdis, kdis_param);
+
+	params.push_back(ros_an); 
+	params.push_back(ros_bn);
+	params.push_back(ros_fn);
+	params.push_back(ros_f);
+	params.push_back(ros_kdis);
+
+}
+
+void rhinfObject::insert_data(std::vector<std_msgs::Float64> ros_vec, std::vector<double> const& vec)
+{
+	for(int i = 0; i<vec.size();i++)
+	{
+		std_msgs::Float64 f;
+		f.data = vec[i];
+		ros_vec.push_back(f);
+	}
 
 }
 

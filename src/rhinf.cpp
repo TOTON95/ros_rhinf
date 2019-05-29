@@ -88,10 +88,8 @@ rhinfObject::rhinfObject()
 	{
 		calc();
 		ros::spinOnce();
-
 		ros::Duration(_sample_time).sleep();
 	}
-
 };
 
 void rhinfObject::calc()
@@ -110,14 +108,8 @@ void rhinfObject::calc()
 				return;
 			}
 		}
-		else
-		{
-			ROS_INFO("prev_t is 0, nothing to change");
-			prev_t = ros::Time::now();
-			return;
-		}
-		need_to_refresh = false;
 	}
+	need_to_refresh = false;
 }
 
 void rhinfObject::setParams(rh::rhinf_ctl &ctl)
@@ -150,7 +142,6 @@ void rhinfObject::setParams(rh::rhinf_ctl &ctl)
 	dims.push_back(d_fn_param);
 	dims.push_back(d_f_param);
 	dims.push_back(d_kdis_param);
-
 
 	//Controller
 	ctl.load_param(params,dims,_saturation,_downsampling);
@@ -194,13 +185,13 @@ void rhinfObject::print_param()
 	explore_vector(d_kdis_param);
 }
 
-void rhinfObject::stateCallback(const std_msgs::Float64& state_msg)
+void rhinfObject::stateCallback(const std_msgs::Float64MultiArray& state_msg)
 {
 	_state = state_msg.data;
 	need_to_refresh = true;
 }
 
-void rhinfObject::refCallback(const std_msgs::Float64& ref_msg)
+void rhinfObject::refCallback(const std_msgs::Float64MultiArray& ref_msg)
 {
 	_reference = ref_msg.data;
 	need_to_refresh = true;

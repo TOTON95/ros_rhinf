@@ -26,8 +26,8 @@ namespace rh
 			void insert_data(std::vector<std_msgs::Float64> ros_vec, std::vector<double> const& vec);
 
 			//Callbacks
-			void stateCallback(const std_msgs::Float64& state_msg);
-			void refCallback(const std_msgs::Float64& ref_msg);
+			void stateCallback(const std_msgs::Float64MultiArray& state_msg);
+			void refCallback(const std_msgs::Float64MultiArray& ref_msg);
 
 			//Template
 			template <typename T, typename A>
@@ -41,9 +41,9 @@ namespace rh
 				}
 
 			//Parameters
-			double _state;
+			std::vector<double> _state;
 			double _control_effort = 0;
-			double _reference = 0;
+			std::vector<double> _reference;
 			bool need_to_refresh = false;
 			double _downsampling;
 			double _sample_time;
@@ -62,12 +62,15 @@ namespace rh
 			//Time var
 			ros::Time prev_t;
 			ros::Duration dt;
+			ros::Time exec_t;
+			
 
 			//ROS I/O
 			ros::Publisher _control_effort_pub;
 			std::string s_ctl, s_state, s_ref;
 
-			std_msgs::Float64 ctl_msg, state_msg;	
+			std_msgs::Float64 ctl_msg;
+			std_msgs::Float64MultiArray state, reference;
 	};	
 }
 #endif

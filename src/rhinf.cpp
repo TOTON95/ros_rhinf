@@ -35,21 +35,21 @@ rhinfObject::rhinfObject()
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/FN", bn_param) || !n_priv.getParam("/FN_dim", d_fn_param))
+	if(!n_priv.getParam("/FN", fn_param) || !n_priv.getParam("/FN_dim", d_fn_param))
 	{
 		ROS_ERROR_STREAM("Failed to import FN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/F", bn_param) || !n_priv.getParam("/F_dim", d_f_param))
+	if(!n_priv.getParam("/F", f_param) || !n_priv.getParam("/F_dim", d_f_param))
 	{
 		ROS_ERROR_STREAM("Failed to import F parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/KDIS", bn_param) || !n_priv.getParam("/KDIS_dim", d_kdis_param))
+	if(!n_priv.getParam("/KDIS", kdis_param) || !n_priv.getParam("/KDIS_dim", d_kdis_param))
 	{
 		ROS_ERROR_STREAM("Failed to import KDIS parameters. Terminating.");
 		ros::shutdown();
@@ -91,15 +91,15 @@ rhinfObject::rhinfObject()
 		calc();
 		ros::spinOnce();
 		ROS_INFO("PASS\n");
-		sleep_t.sleep();
 	}
 };
 
 void rhinfObject::calc()
 {
-	if(need_to_refresh)
-	{
+	//if(need_to_refresh)
+	//{
 		ros::Time init_t = prev_t;
+		std::cout<<"init_t: "<<init_t.toSec()<<std::endl;
 		//dt calculation
 		if(!prev_t.isZero())
 		{
@@ -119,6 +119,9 @@ void rhinfObject::calc()
 			return;
 		}
 
+		
+		std::cout<<"prev_t: "<<prev_t.toSec()-init_t.toSec()<<std::endl;
+
 		//Creating state and reference structure
 		Matrix m_state(_state.size(),1,vector2array(_state));
 		Matrix m_ref(_reference.size(),1,vector2array(_state));
@@ -126,17 +129,21 @@ void rhinfObject::calc()
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);
 
-		std::cout<<"Output: "<<output<<std::endl;
+		//std::cout<<"Output: "<<output<<std::endl;
 
 		//Send output signal
 		ctl_msg.data = output;
 		_control_effort_pub.publish(ctl_msg);
 			
 		exec_t = ros::Time::now();
+		std::cout<<"exec_t: "<<exec_t.toSec()-init_t.toSec()<<std::endl;
 		sleep_t = sampling_t - (exec_t - init_t);
+		std::cout<<"sleep_t: "<<sleep_t.toSec()<<std::endl;
+		std::cout<<"_it: "<<_it<<std::endl; 
 		_it++;
-	}
-	need_to_refresh = false;
+	//sleep_t.sleep();
+	//}
+	//need_to_refresh = false;
 }
 
 void rhinfObject::setParams()
@@ -156,6 +163,18 @@ void rhinfObject::setParams()
 	insert_data(ros_kdis, kdis_param);
 
 	params.push_back(ros_an); 
+	
+	//TEST
+	/*std::cout<<"Size params: "<<params[0].size()<<std::endl;
+	for(int i=0;i<params.size();i++)
+	{
+		for(int j=0;j<params[i].size();j++)
+		{
+			std::cout<<params[i][j].data<<std::endl;
+		}
+	}*/
+	//END_TEST
+
 	params.push_back(ros_bn);
 	params.push_back(ros_fn);
 	params.push_back(ros_f);
@@ -176,13 +195,14 @@ void rhinfObject::setParams()
 	std::cout<<std::endl<<"PARAMETERS LOADED"<<std::endl;
 }
 
-void rhinfObject::insert_data(std::vector<std_msgs::Float64> ros_vec, std::vector<double> const& vec)
+void rhinfObject::insert_data(std::vector<std_msgs::Float64> &ros_vec, std::vector<double> const& vec)
 {
 	for(int i = 0; i<vec.size();i++)
 	{
 		std_msgs::Float64 f;
 		f.data = vec[i];
 		ros_vec.push_back(f);
+		//std::cout<<"Inserted data: "<<f.data<<std::endl;
 	}
 
 }
@@ -213,6 +233,7 @@ void rhinfObject::print_param()
 	std::cout<<"Sampling time: "<<_sample_time<<std::endl;
 	std::cout<<"Downsampling: "<<_downsampling<<std::endl;
 	std::cout<<"Saturation: "<<_saturation<<std::endl;
+
 }
 
 void rhinfObject::stateCallback(const std_msgs::Float64MultiArray& state_msg)

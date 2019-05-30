@@ -21,7 +21,12 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
         }
         if (t%downsampling==0)
 	{
+		/*rh::print_matrix(state,"state");
+		rh::print_matrix(reference,"ref");
+		rh::print_matrix(xant,"xant");*/
+
 		rh::Matrix error = rh::sub_matrix(state,reference);
+		//rh::print_matrix(error,"error");
 		double *e = rh::matrix_to_array(error);
                 float *e_abs = new float[error.getRows()*error.getCols()];
                 for(int j=0; j<(error.getRows()*error.getCols()); j++)
@@ -42,6 +47,18 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 		//An@xant
                 double *_r = rh::rhinf_ctl::dgemm(an.getRows() , an.getCols() , _an , xant.getRows() , xant.getCols() , _xant , an_xant_r , an_xant_c);
 		rh::Matrix an_xant = rh::Matrix(an_xant_r,an_xant_c,_r);
+		
+		//TEST
+		/*rh::print_matrix(an_xant,"an_xant");
+		std::cout<<"_r"<<std::endl;
+		std::cout<<"ROWS xant: "<<an_xant_r<<" COLS xant: "<<an_xant_c<<std::endl;
+		for(int i=0;i<(an_xant_r*an_xant_c);i++)
+		{
+			std::cout<<_r[i]<<" ";
+		}
+		std::cout<<std::endl;*/
+		//END_TEST
+
 
 		//Bn*uant
                 double *bn_uant = new double[bn.getRows()*bn.getCols()];
@@ -51,14 +68,17 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
                         bn_uant[o] = _bn[o]*usat(umax,uant);
                 }
 		rh::Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
+		//rh::print_matrix(m_bn_uant,"m_bn_uant");
 
 		
 		//x-an_xant
 		rh::Matrix x_an_xant = rh::sub_matrix(state,an_xant);
+		//rh::print_matrix(x_an_xant,"x_an_xant");
 
 
 		//dls
 		rh::Matrix dls = rh::sub_matrix(x_an_xant,m_bn_uant);
+		//rh::print_matrix(dls,"dls");
 
 		//Kdls@dls
                 double *_kdls = rh::matrix_to_array(kdis);
@@ -68,6 +88,7 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 
 		double *_q = rh::rhinf_ctl::dgemm(kdis.getRows() , kdis.getCols() , _kdls , dls.getRows() , dls.getCols() , _dls , kdls_dls_r , kdls_dls_c);
 		rh::Matrix m_kdls_dls = rh::Matrix(kdls_dls_r,kdls_dls_c,_q);
+		//rh::print_matrix(m_kdls_dls,"m_kdls_dls");
 
 		//myUN*Fn
                 double *_fn = rh::matrix_to_array(fn);
@@ -75,9 +96,11 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
                 for(int i=0;i<(fn.getRows()*fn.getCols());i++)
                         myUN_fn[i] = _fn[i]*myUN;
 		rh::Matrix m_myUN_fn = rh::Matrix(fn.getRows(),fn.getCols(),myUN_fn);
+		//rh::print_matrix(m_myUN_fn,"m_myUN_fn");
 
 		//F+myUN_fn
 		rh::Matrix f_myUN_fn = rh::sum_matrix(f,m_myUN_fn);
+		//rh::print_matrix(f_myUN_fn,"f_myUN_fn");
 
 		//f_myUN_fn @ e
                 double *_f_myUN_fn = rh::matrix_to_array(f_myUN_fn);
@@ -85,11 +108,14 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
                 int fmf_r,fmf_c;
                 double *_s = rh::rhinf_ctl::dgemm((double)f_myUN_fn.getRows() , (double)f_myUN_fn.getCols() , _f_myUN_fn , error.getRows() , error.getCols() , _error , fmf_r , fmf_c);
 		rh::Matrix m_fmf_e = rh::Matrix(fmf_r,fmf_c,_s);
+		//rh::print_matrix(m_fmf_e,"m_fmf_e");
 
 		//m_fmf_e + kdls@dls
 		rh::Matrix u = rh::sum_matrix(m_fmf_e , m_kdls_dls);
+		//rh::print_matrix(u,"u");
 
 		uant = usat(umax,u.getData()[0][0]);
+		//std::cout<<"U_sat: "<<uant<<std::endl;
 		xant = state;
                 return uant;
 	}
@@ -103,7 +129,7 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double _umax, int ds)
 {
 	std::vector<std_msgs::Float64> AN,BN,FN,F,KDIS;
-	
+
 	AN = params[0];
 	BN = params[1];
 	FN = params[2];
@@ -125,6 +151,14 @@ bool rh::rhinf_ctl::load_param(std::vector<std::vector<std_msgs::Float64>> param
 	fn = rh::Matrix(dim[4],dim[5],_FN);
 	f = rh::Matrix(dim[6],dim[7],_F);
 	kdis = rh::Matrix(dim[8],dim[9],_KDIS);
+
+	//TEST
+	/*rh::print_matrix(an,"AN");
+	rh::print_matrix(bn,"BN");
+	rh::print_matrix(fn,"FN");
+	rh::print_matrix(f,"F");
+	rh::print_matrix(kdis,"KDIS");*/
+	//END_TEST
 	
 	umax = _umax;
 	downsampling = ds;
@@ -158,23 +192,27 @@ int* rh::rhinf_ctl::extract_dims(std::vector<std::vector<int>> dims)
 double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC)
 {
 	if( _numColA != _numRowB )
-        {
-                std::cout << "number of columns of Matrix A is NOT equal to num of rows of Matrix B" << std::endl;
-                return NULL;
-        }
+	{
+		std::cout << "number of columns of Matrix A is NOT equal to num of rows of Matrix B" << std::endl;
+		return NULL;
+	}
 
-        _numRowC = _numRowA;
-        _numColC = _numColB;
+	_numRowC = _numRowA;
+	_numColC = _numColB;
 
-        char trans = 'N';
-        double alpha = 1.0 , beta = 0.0;
-        double *C = new double [ _numRowC * _numColC ];
-        int lda = _numRowA;
-        int ldb = _numRowB;
-        int ldc = _numRowC;
-        dgemm_(&trans, &trans, &_numRowA , &_numColB , &_numColA , &alpha , _A , &lda , _B , &ldb , &beta , C , &ldc );
+	char trans = 'N';
+	double alpha = 1.0 , beta = 0.0;
+	double *C = new double [ _numRowC * _numColC ];
+	/*int lda = ( _numRowA >= _numColA ) ? _numRowA : _numColA;
+	int ldb = ( _numRowB >= _numColB ) ? _numRowB : _numColB;
+	int ldc = ( _numRowC >= _numColC ) ? _numRowC : _numColC;*/
+	int lda = _numRowA;
+	int ldb = _numRowB;
+	int ldc = _numRowC;
+	dgemm_(&trans, &trans, &_numRowA , &_numColB , &_numColA , &alpha , _A , &lda , _B , &ldb , &beta , C , &ldc );
 
-        return C;
+	return C;
+
 }
 
 double rh::rhinf_ctl::usat(double umax, double u)

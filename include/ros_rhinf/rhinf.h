@@ -23,7 +23,7 @@ namespace rh
 			void calc();
 			void setParams();
 			void print_param();
-			void insert_data(std::vector<std_msgs::Float64> ros_vec, std::vector<double> const& vec);
+			void insert_data(std::vector<std_msgs::Float64> &ros_vec, std::vector<double> const& vec);
 
 			//Callbacks
 			void stateCallback(const std_msgs::Float64MultiArray& state_msg);

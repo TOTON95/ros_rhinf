@@ -85,12 +85,21 @@ rhinfObject::rhinfObject()
 	while( ros::ok() && !ros::topic::waitForMessage<std_msgs::Float64MultiArray>(s_state, ros::Duration(10.)))
 		ROS_WARN_STREAM("Waiting for first state message");	
 
+	//TEST
+	ros::Time s0_t = ros::Time::now();
+	//END_TEST
+
 	//Infinite cycle until
 	while(ros::ok())
 	{
 		calc();
+		ros::Time s1_t = ros::Time::now();
+		ros::Duration d= s1_t-s0_t;
+		ROS_WARN("Duration: %lf",d.toSec());
+		s0_t = s1_t;
 		ros::spinOnce();
 		ROS_INFO("PASS\n");
+		//ros::Duration(0.01).sleep();
 	}
 };
 
@@ -98,7 +107,7 @@ void rhinfObject::calc()
 {
 	//if(need_to_refresh)
 	//{
-		ros::Time init_t = prev_t;
+		ros::Time init_t = ros::Time::now();
 		std::cout<<"init_t: "<<init_t.toSec()<<std::endl;
 		//dt calculation
 		if(!prev_t.isZero())
@@ -129,19 +138,32 @@ void rhinfObject::calc()
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);
 
+		exec_t = ros::Time::now();
+
 		//std::cout<<"Output: "<<output<<std::endl;
 
 		//Send output signal
 		ctl_msg.data = output;
 		_control_effort_pub.publish(ctl_msg);
 			
-		exec_t = ros::Time::now();
 		std::cout<<"exec_t: "<<exec_t.toSec()-init_t.toSec()<<std::endl;
 		sleep_t = sampling_t - (exec_t - init_t);
 		std::cout<<"sleep_t: "<<sleep_t.toSec()<<std::endl;
 		std::cout<<"_it: "<<_it<<std::endl; 
 		_it++;
-	//sleep_t.sleep();
+		
+		//TEST
+		if(sleep_t.toSec() >= 0)
+		{
+			sleep_t.sleep();
+		}
+		else
+		{
+			ROS_ERROR("Too LONG");
+			ros::shutdown();
+		}
+		//END_TEST
+
 	//}
 	//need_to_refresh = false;
 }

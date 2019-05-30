@@ -95,10 +95,10 @@ rhinfObject::rhinfObject()
 		calc();
 		ros::Time s1_t = ros::Time::now();
 		ros::Duration d= s1_t-s0_t;
-		ROS_WARN("Duration: %lf",d.toSec());
+		//ROS_WARN("Duration: %lf",d.toSec());
 		s0_t = s1_t;
 		ros::spinOnce();
-		ROS_INFO("PASS\n");
+		//ROS_INFO("PASS\n");
 		//ros::Duration(0.01).sleep();
 	}
 };
@@ -108,7 +108,7 @@ void rhinfObject::calc()
 	//if(need_to_refresh)
 	//{
 		ros::Time init_t = ros::Time::now();
-		std::cout<<"init_t: "<<init_t.toSec()<<std::endl;
+		//std::cout<<"init_t: "<<init_t.toSec()<<std::endl;
 		//dt calculation
 		if(!prev_t.isZero())
 		{
@@ -129,7 +129,7 @@ void rhinfObject::calc()
 		}
 
 		
-		std::cout<<"prev_t: "<<prev_t.toSec()-init_t.toSec()<<std::endl;
+		//std::cout<<"prev_t: "<<prev_t.toSec()-init_t.toSec()<<std::endl;
 
 		//Creating state and reference structure
 		Matrix m_state(_state.size(),1,vector2array(_state));
@@ -146,10 +146,10 @@ void rhinfObject::calc()
 		ctl_msg.data = output;
 		_control_effort_pub.publish(ctl_msg);
 			
-		std::cout<<"exec_t: "<<exec_t.toSec()-init_t.toSec()<<std::endl;
+		//std::cout<<"exec_t: "<<exec_t.toSec()-init_t.toSec()<<std::endl;
 		sleep_t = sampling_t - (exec_t - init_t);
-		std::cout<<"sleep_t: "<<sleep_t.toSec()<<std::endl;
-		std::cout<<"_it: "<<_it<<std::endl; 
+		//std::cout<<"sleep_t: "<<sleep_t.toSec()<<std::endl;
+		//std::cout<<"_it: "<<_it<<std::endl; 
 		_it++;
 		
 		//TEST

@@ -1,4 +1,4 @@
 <launch>
-<rosparam command="load" file"$(find ros_rhinf)/cfg/Axis_X.yaml"/>
+<rosparam command="load" file="$(find ros_rhinf)/cfg/Axis_X.yaml"/>
 <node pkg="ros_rhinf" type="ros_rhinf_node" name="Mambo_x_axis"/>
 </launch>

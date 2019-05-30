@@ -69,7 +69,7 @@ rh::Matrix rh::sub_matrix(rh::Matrix &A, rh::Matrix &B)
                 throw std::runtime_error("Input shapes must match");
 }
 
-void print_matrix(rh::Matrix &A, std::string title)
+void rh::print_matrix(rh::Matrix &A, std::string title)
 {
 	std::cout<<std::endl;
 	std::cout<<title<<std::endl;

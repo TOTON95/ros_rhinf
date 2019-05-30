@@ -64,7 +64,7 @@ rhinfObject::rhinfObject()
 
 
 	//Setup controller
-	setParams(ctl);
+	setParams();
 
 	//Init publishers and subscribers
 	_control_effort_pub = node.advertise<std_msgs::Float64>(s_ctl, 1);
@@ -80,9 +80,9 @@ rhinfObject::rhinfObject()
 	}
 
 	//Wait for incoming messages
-	while( ros::ok() && !ros::topic::waitForMessage<std_msgs::Float64>(s_ref, ros::Duration(10.)))
+	while( ros::ok() && !ros::topic::waitForMessage<std_msgs::Float64MultiArray>(s_ref, ros::Duration(10.)))
 		ROS_WARN_STREAM("Waiting for first reference message");
-	while( ros::ok() && !ros::topic::waitForMessage<std_msgs::Float64>(s_state, ros::Duration(10.)))
+	while( ros::ok() && !ros::topic::waitForMessage<std_msgs::Float64MultiArray>(s_state, ros::Duration(10.)))
 		ROS_WARN_STREAM("Waiting for first state message");	
 
 	//Infinite cycle until
@@ -90,6 +90,7 @@ rhinfObject::rhinfObject()
 	{
 		calc();
 		ros::spinOnce();
+		ROS_INFO("PASS\n");
 		sleep_t.sleep();
 	}
 };
@@ -119,17 +120,18 @@ void rhinfObject::calc()
 		}
 
 		//Creating state and reference structure
-		Matrix m_state(1,_state.size(),vector2array(_state));
-		Matrix m_ref(1,_reference.size(),vector2array(_state));
+		Matrix m_state(_state.size(),1,vector2array(_state));
+		Matrix m_ref(_reference.size(),1,vector2array(_state));
 
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);
+
+		std::cout<<"Output: "<<output<<std::endl;
 
 		//Send output signal
 		ctl_msg.data = output;
 		_control_effort_pub.publish(ctl_msg);
 			
-
 		exec_t = ros::Time::now();
 		sleep_t = sampling_t - (exec_t - init_t);
 		_it++;
@@ -137,7 +139,7 @@ void rhinfObject::calc()
 	need_to_refresh = false;
 }
 
-void rhinfObject::setParams(rh::rhinf_ctl &ctl)
+void rhinfObject::setParams()
 {
 	//Coefficients
 	std::vector<std::vector<std_msgs::Float64>> params;

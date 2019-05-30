@@ -51,9 +51,11 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
                         bn_uant[o] = _bn[o]*usat(umax,uant);
                 }
 		rh::Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
+
 		
 		//x-an_xant
 		rh::Matrix x_an_xant = rh::sub_matrix(state,an_xant);
+
 
 		//dls
 		rh::Matrix dls = rh::sub_matrix(x_an_xant,m_bn_uant);
@@ -150,6 +152,7 @@ int* rh::rhinf_ctl::extract_dims(std::vector<std::vector<int>> dims)
 			c++;	
 		}
 	}
+	return dimensions;
 }
 
 double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC)

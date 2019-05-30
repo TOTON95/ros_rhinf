@@ -21,7 +21,7 @@ namespace rh
 		private:
 			//Methods
 			void calc();
-			void setParams(rh::rhinf_ctl &ctl);
+			void setParams();
 			void print_param();
 			void insert_data(std::vector<std_msgs::Float64> ros_vec, std::vector<double> const& vec);
 

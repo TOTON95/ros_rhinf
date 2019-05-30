@@ -18,7 +18,6 @@ namespace rh
 			void setRows(int rows) {m = rows;}
 			void setCols(int cols) {n = cols;}	
 			void setData(double** d) {data = d;}
-                        void print_matrix(Matrix &A, std::string title);
 			~Matrix();
 		private:
 			double **data = new double*[1];
@@ -30,6 +29,7 @@ namespace rh
 	double *matrix_to_f_array(Matrix &A);
 	double *matrix_to_array(Matrix &A);
 	double *vector2array(std::vector<double> const& vec);
+        void print_matrix(Matrix &A, std::string title);
 }
 
 #endif

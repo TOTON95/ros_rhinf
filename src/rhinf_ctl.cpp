@@ -26,7 +26,7 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 		rh::print_matrix(xant,"xant");*/
 
 		rh::Matrix error = rh::sub_matrix(state,reference);
-		//rh::print_matrix(error,"error");
+		rh::print_matrix(error,"error");
 		double *e = rh::matrix_to_array(error);
                 float *e_abs = new float[error.getRows()*error.getCols()];
                 for(int j=0; j<(error.getRows()*error.getCols()); j++)

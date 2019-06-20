@@ -10,13 +10,13 @@ sample_time: 0.01
 saturation: 1
 
 #Topic for controller's output
-topic_controller: "control_effort"
+topic_controller: "control_effort_pos_X"
 
 #Topic for state's input
-topic_state: "state"
+topic_state: "rhinf_st"
 
 #Topic for reference's input
-topic_ref: "reference"
+topic_ref: "rhinf_ref"
 
 #AN
 AN: [1.0,1.0,0.0,0.99851729]
@@ -27,7 +27,8 @@ BN: [0.0, 0.0002362]
 BN_dim: [2,1]
 
 #FN
-FN: [0.00140837, 0.02207816]
+#FN: [0.00140837, 0.02207816]
+FN: [0.0, 0.0]
 FN_dim: [1,2]
 
 #F
@@ -36,4 +37,5 @@ F_dim: [1,2]
 
 #Kdis
 KDIS: [0.0,-4233.78427452]
+#KDIS: [0.0,0.0]
 KDIS_dim: [1,2]

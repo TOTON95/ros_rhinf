@@ -133,7 +133,7 @@ void rhinfObject::calc()
 
 		//Creating state and reference structure
 		Matrix m_state(_state.size(),1,vector2array(_state));
-		Matrix m_ref(_reference.size(),1,vector2array(_state));
+		Matrix m_ref(_reference.size(),1,vector2array(_reference));
 
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);

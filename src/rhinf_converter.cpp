@@ -3,6 +3,7 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <tf/transform_datatypes.h>
 #include <vector>
+#include <ros_rhinf/matrix.h>
 
 #define PI 3.141592653589793238462
 

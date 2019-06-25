@@ -66,7 +66,7 @@ void velocity_w_filter()
 {
 	double vel = (1-a)*prev_vel+a*(drone._posX - prev_p);
 	out_msg_x.data[0] = drone._posX;
-	out_msg_x.data[1] = vel*10;
+	out_msg_x.data[1] = vel;
 	out.publish(out_msg_x);
 	ref_out.publish(ref_msg_x);
 	prev_p = drone._posX;

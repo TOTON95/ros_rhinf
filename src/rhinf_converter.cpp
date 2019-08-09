@@ -16,7 +16,8 @@ ros::Time s0_t, s1_t;
 ros::Publisher out;
 ros::Publisher ref_out;
 
-double a = 0.50;
+//double a = 0.50;
+double a = 1.00;
 double prev_vel = 0.00;
 
 struct v_object                                                         //Structure that describes the properties of the object
@@ -64,7 +65,7 @@ void setOutMsg()
 
 void velocity_w_filter()
 {
-	double vel = (1-a)*prev_vel+a*(drone._posX - prev_p);
+	double vel = (1-a)*prev_vel+a/100*(drone._posX - prev_p);
 	out_msg_x.data[0] = drone._posX;
 	out_msg_x.data[1] = vel;
 	out.publish(out_msg_x);

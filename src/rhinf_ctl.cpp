@@ -26,91 +26,92 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 		rh::print_matrix(xant,"xant");
 
 		rh::Matrix error = rh::sub_matrix(state,reference);
-		rh::print_matrix(error,"error");
+		//rh::print_matrix(error,"error");
 		
-		double aux = 0;
+		//double aux = 0;
 
-		double *e = rh::matrix_to_array(error);
-                float *e_abs = new float[error.getRows()*error.getCols()];
-		std::cout<<"ABS:";
-                for(int j=0; j<(error.getRows()*error.getCols()); j++)
-                {
-                        e_abs[j] = -1.1*abs((float)e[j]);
-		       	std::cout<<" "<<e_abs[j]<<" ";	
-                }
-		std::cout<<std::endl<<"EXP:";
-                float *e_exp = new float[error.getRows()*error.getCols()];
-                for(int j=0; j<(error.getRows()*error.getCols()); j++)
-                {
-                        e_exp[j] = exp(e_abs[j]) - 1;
-		       	std::cout<<" "<<e_exp[j]<<" ";	
-		}
-		std::cout<<std::endl;
-		double myUN = (double)(-3.6386 * snrm2(error.getRows()*error.getCols(),e_exp,1));
-		std::cout<<"MYUN: "<<myUN;
-		double *_an = rh::matrix_to_f_array(an);
-		double *_xant = rh::matrix_to_array(xant);
-		int an_xant_r;
-                int an_xant_c;
+		//double *e = rh::matrix_to_array(error);
+                //float *e_abs = new float[error.getRows()*error.getCols()];
+		//std::cout<<"ABS:";
+                //for(int j=0; j<(error.getRows()*error.getCols()); j++)
+                //{
+                //        e_abs[j] = -1.1*abs((float)e[j]);
+		//       	std::cout<<" "<<e_abs[j]<<" ";	
+                //}
+		//std::cout<<std::endl<<"EXP:";
+                //float *e_exp = new float[error.getRows()*error.getCols()];
+                //for(int j=0; j<(error.getRows()*error.getCols()); j++)
+                //{
+                //        e_exp[j] = exp(e_abs[j]) - 1;
+		//       	std::cout<<" "<<e_exp[j]<<" ";	
+		//}
+		//std::cout<<std::endl;
+		//double myUN = (double)(-3.6386 * snrm2(error.getRows()*error.getCols(),e_exp,1));
+		//std::cout<<"MYUN: "<<myUN;
+		//double *_an = rh::matrix_to_f_array(an);
+		//double *_xant = rh::matrix_to_array(xant);
+		//int an_xant_r;
+                //int an_xant_c;
 
-		//An@xant
-                double *_r = rh::rhinf_ctl::dgemm(an.getRows() , an.getCols() , _an , xant.getRows() , xant.getCols() , _xant , an_xant_r , an_xant_c);
-		rh::Matrix an_xant = rh::Matrix(an_xant_r,an_xant_c,_r,true);
-		
-		//TEST
-		rh::print_matrix(an_xant,"an_xant");
-		std::cout<<"_r"<<std::endl;
-		std::cout<<"ROWS xant: "<<an_xant_r<<" COLS xant: "<<an_xant_c<<std::endl;
-		for(int i=0;i<(an_xant_r*an_xant_c);i++)
-		{
-			std::cout<<_r[i]<<" ";
-		}
-		std::cout<<std::endl;
-		//END_TEST
-
-
-		//Bn*uant
-                double *bn_uant = new double[bn.getRows()*bn.getCols()];
-                double *_bn = rh::matrix_to_array(bn);
-                for(int o=0;o<(bn.getRows()*bn.getCols());o++)
-                {
-                        bn_uant[o] = _bn[o]*usat(umax,uant);
-                }
-		rh::Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
-		rh::print_matrix(m_bn_uant,"m_bn_uant");
-
-		
-		//x-an_xant
-		rh::Matrix x_an_xant = rh::sub_matrix(state,an_xant);
-		rh::print_matrix(x_an_xant,"x_an_xant");
+		////An@xant
+                //double *_r = rh::rhinf_ctl::dgemm(an.getRows() , an.getCols() , _an , xant.getRows() , xant.getCols() , _xant , an_xant_r , an_xant_c);
+		//rh::Matrix an_xant = rh::Matrix(an_xant_r,an_xant_c,_r,true);
+		//
+		////TEST
+		//rh::print_matrix(an_xant,"an_xant");
+		//std::cout<<"_r"<<std::endl;
+		//std::cout<<"ROWS xant: "<<an_xant_r<<" COLS xant: "<<an_xant_c<<std::endl;
+		//for(int i=0;i<(an_xant_r*an_xant_c);i++)
+		//{
+		//	std::cout<<_r[i]<<" ";
+		//}
+		//std::cout<<std::endl;
+		////END_TEST
 
 
-		//dls
-		rh::Matrix dis = rh::sub_matrix(x_an_xant,m_bn_uant);
-		rh::print_matrix(dis,"dls");
+		////Bn*uant
+                //double *bn_uant = new double[bn.getRows()*bn.getCols()];
+                //double *_bn = rh::matrix_to_array(bn);
+                //for(int o=0;o<(bn.getRows()*bn.getCols());o++)
+                //{
+                //        bn_uant[o] = _bn[o]*usat(umax,uant);
+                //}
+		//rh::Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
+		//rh::print_matrix(m_bn_uant,"m_bn_uant");
 
-		print_matrix(kdis,"KDIS");
+		//
+		////x-an_xant
+		//rh::Matrix x_an_xant = rh::sub_matrix(state,an_xant);
+		//rh::print_matrix(x_an_xant,"x_an_xant");
 
-		//Kdls@dls
-                double *_kdis = rh::matrix_to_f_array(kdis);
-                double *_dis = rh::matrix_to_f_array(dis);
-                int kdis_dis_r;
-                int kdis_dis_c;
 
-		double *_q = rh::rhinf_ctl::dgemm(kdis.getRows() , kdis.getCols() , _kdis , dis.getRows() , dis.getCols() , _dis , kdis_dis_r , kdis_dis_c);
-		rh::Matrix m_kdis_dis = rh::Matrix(kdis_dis_r,kdis_dis_c,_q,true);
-		rh::print_matrix(m_kdis_dis,"m_kdis_dis");
+		////dls
+		//rh::Matrix dis = rh::sub_matrix(x_an_xant,m_bn_uant);
+		//rh::print_matrix(dis,"dls");
 
-		//myUN*Fn
-                double *_fn = rh::matrix_to_array(fn);
-                double *myUN_fn = new double[fn.getRows()*fn.getCols()];
-                for(int i=0;i<(fn.getRows()*fn.getCols());i++)
-                        myUN_fn[i] = _fn[i]*myUN;
-		rh::Matrix m_myUN_fn = rh::Matrix(fn.getRows(),fn.getCols(),myUN_fn);
-		rh::print_matrix(m_myUN_fn,"m_myUN_fn");
+		//print_matrix(kdis,"KDIS");
 
-		//F+myUN_fn
-		rh::Matrix f_myUN_fn = rh::sum_matrix(f,m_myUN_fn);
+		////Kdls@dls
+                //double *_kdis = rh::matrix_to_f_array(kdis);
+                //double *_dis = rh::matrix_to_f_array(dis);
+                //int kdis_dis_r;
+                //int kdis_dis_c;
+
+		//double *_q = rh::rhinf_ctl::dgemm(kdis.getRows() , kdis.getCols() , _kdis , dis.getRows() , dis.getCols() , _dis , kdis_dis_r , kdis_dis_c);
+		//rh::Matrix m_kdis_dis = rh::Matrix(kdis_dis_r,kdis_dis_c,_q,true);
+		//rh::print_matrix(m_kdis_dis,"m_kdis_dis");
+
+		////myUN*Fn
+                //double *_fn = rh::matrix_to_array(fn);
+                //double *myUN_fn = new double[fn.getRows()*fn.getCols()];
+                //for(int i=0;i<(fn.getRows()*fn.getCols());i++)
+                //        myUN_fn[i] = _fn[i]*myUN;
+		//rh::Matrix m_myUN_fn = rh::Matrix(fn.getRows(),fn.getCols(),myUN_fn);
+		//rh::print_matrix(m_myUN_fn,"m_myUN_fn");
+
+		////F+myUN_fn
+		////rh::Matrix f_myUN_fn = rh::sum_matrix(f,m_myUN_fn);
+		rh::Matrix f_myUN_fn = f;
 		rh::print_matrix(f_myUN_fn,"f_myUN_fn");
 
 		//f_myUN_fn @ e
@@ -122,7 +123,8 @@ double rh::rhinf_ctl::update(rh::Matrix &state, rh::Matrix &reference, int t)
 		rh::print_matrix(m_fmf_e,"m_fmf_e");
 
 		//m_fmf_e + kdls@dls
-		rh::Matrix u = rh::sum_matrix(m_fmf_e , m_kdis_dis);
+		//rh::Matrix u = rh::sum_matrix(m_fmf_e , m_kdis_dis);
+		rh::Matrix u = m_fmf_e;
 		rh::print_matrix(u,"u");
 
 		uant = usat(umax,u.getData()[0][0]);

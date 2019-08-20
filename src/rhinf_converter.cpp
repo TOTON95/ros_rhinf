@@ -3,8 +3,11 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <tf/transform_datatypes.h>
 #include <vector>
+#include <iostream>
 
 #define PI 3.141592653589793238462
+
+#define _DEBUG true
 
 double heading = 0;
 double s_t = 0;
@@ -63,9 +66,17 @@ void setOutMsg()
         prev_p = drone._posX;
 }
 
+//Discrete velocity 
 void velocity_w_filter()
 {
-	double vel = (1-a)*prev_vel+a/100*(drone._posX - prev_p);
+	vel = (1-a)*prev_vel+a*(drone._posX - prev_p);
+
+	#if _DEBUG
+		std::cout<<"Velocity:\n"<<vel<<std::endl;
+		std::cout<<"drone._posX:\n"<<drone._posX<<std::endl;
+		std::cout<<"prev_p:\n"<<prev_p<<std::endl;
+	#endif
+
 	out_msg_x.data[0] = drone._posX;
 	out_msg_x.data[1] = vel;
 	out.publish(out_msg_x);

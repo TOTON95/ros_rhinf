@@ -132,10 +132,6 @@ void rhinfObject::calc()
 		//std::cout<<"prev_t: "<<prev_t.toSec()-init_t.toSec()<<std::endl;
 
 		//Creating state and reference structure
-		//Matrix m_state(_state.size(),1,vector2array(_state));
-		//Matrix m_ref(_reference.size(),1,vector2array(_reference));
-
-		//Create objects
 		Eigen::MatrixXd m_state(2,2), m_ref(2,2);
 
 		//std::cout<<"state_size:"<<_state.size()<<std::endl;

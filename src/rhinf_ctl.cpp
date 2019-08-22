@@ -27,84 +27,40 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
 		Eigen::MatrixXd error = state - reference;
 		std::cout<<"Err: \n"<<error<<std::endl;
 
-		//double *e = rh::matrix_to_array(error);
-                //float *e_abs = new float[error.getRows()*error.getCols()];
-		//std::cout<<"ABS:";
-                //for(int j=0; j<(error.getRows()*error.getCols()); j++)
-                //{
-                //        e_abs[j] = -1.1*abs((float)e[j]);
-		//       	std::cout<<" "<<e_abs[j]<<" ";	
-                //}
-		//std::cout<<std::endl<<"EXP:";
-                //float *e_exp = new float[error.getRows()*error.getCols()];
-                //for(int j=0; j<(error.getRows()*error.getCols()); j++)
-                //{
-                //        e_exp[j] = exp(e_abs[j]) - 1;
-		//       	std::cout<<" "<<e_exp[j]<<" ";	
-		//}
-		//std::cout<<std::endl;
-		//double myUN = (double)(-3.6386 * snrm2(error.getRows()*error.getCols(),e_exp,1));
-		//std::cout<<"MYUN: "<<myUN;
-		//double *_an = rh::matrix_to_f_array(an);
-		//double *_xant = rh::matrix_to_array(xant);
-		//int an_xant_r;
-                //int an_xant_c;
+		Eigen::MatrixXd error_abs = error.cwiseAbs();
+		std::cout<<"Err_abs: \n"<<error.cwiseAbs()<<std::endl;
 
-		////An@xant
-                //double *_r = rh::rhinf_ctl::dgemm(an.getRows() , an.getCols() , _an , xant.getRows() , xant.getCols() , _xant , an_xant_r , an_xant_c);
-		//rh::Matrix an_xant = rh::Matrix(an_xant_r,an_xant_c,_r,true);
-		//
-		////TEST
-		//rh::print_matrix(an_xant,"an_xant");
-		//std::cout<<"_r"<<std::endl;
-		//std::cout<<"ROWS xant: "<<an_xant_r<<" COLS xant: "<<an_xant_c<<std::endl;
-		//for(int i=0;i<(an_xant_r*an_xant_c);i++)
-		//{
-		//	std::cout<<_r[i]<<" ";
-		//}
-		//std::cout<<std::endl;
-		////END_TEST
+		Eigen::MatrixXd error_exp;
+		error_exp.resize(error.rows(),error.cols());
+		error_exp = error_abs.array().exp().matrix();
+		std::cout<<"Err_exp: \n"<<error_exp<<std::endl;
 
+		double myUN = (double)(-3.6386 * error_exp.squaredNorm());
+		std::cout<<"MYUN: "<<myUN<<std::endl;
 
-		////Bn*uant
-                //double *bn_uant = new double[bn.getRows()*bn.getCols()];
-                //double *_bn = rh::matrix_to_array(bn);
-                //for(int o=0;o<(bn.getRows()*bn.getCols());o++)
-                //{
-                //        bn_uant[o] = _bn[o]*usat(umax,uant);
-                //}
-		//rh::Matrix m_bn_uant = rh::Matrix(bn.getRows(),bn.getCols(),bn_uant);
-		//rh::print_matrix(m_bn_uant,"m_bn_uant");
+		//An@xant
+		Eigen::MatrixXd an_xant =  an*xant;
+		std::cout<<"An@xant: \n"<<an_xant<<std::endl;
 
-		//
-		////x-an_xant
-		//rh::Matrix x_an_xant = rh::sub_matrix(state,an_xant);
-		//rh::print_matrix(x_an_xant,"x_an_xant");
+		//Bn*uant
+		Eigen::MatrixXd bn_uant = bn*usat(umax,uant);
+		std::cout<<"bn_uant: \n"<<bn_uant<<std::endl;
 
+		//x-an_xant
+		Eigen::MatrixXd x_an_xant = state-an_xant;
+		std::cout<<"x_an_xant: \n"<<x_an_xant<<std::endl;
 
-		////dls
-		//rh::Matrix dis = rh::sub_matrix(x_an_xant,m_bn_uant);
-		//rh::print_matrix(dis,"dls");
+		//dls
+		Eigen::MatrixXd dis = x_an_xant-bn_uant;
+		std::cout<<"dis: \n"<<dis<<std::endl;
 
-		//print_matrix(kdis,"KDIS");
-
-		////Kdls@dls
-                //double *_kdis = rh::matrix_to_f_array(kdis);
-                //double *_dis = rh::matrix_to_f_array(dis);
-                //int kdis_dis_r;
-                //int kdis_dis_c;
-
-		//double *_q = rh::rhinf_ctl::dgemm(kdis.getRows() , kdis.getCols() , _kdis , dis.getRows() , dis.getCols() , _dis , kdis_dis_r , kdis_dis_c);
-		//rh::Matrix m_kdis_dis = rh::Matrix(kdis_dis_r,kdis_dis_c,_q,true);
-		//rh::print_matrix(m_kdis_dis,"m_kdis_dis");
+		//Kdls@dls
+		Eigen::MatrixXd kdis_dis = kdis*dis;
+		std::cout<<"kdis_dis: \n"<<kdis_dis<<std::endl;
 
 		////myUN*Fn
-                //double *_fn = rh::matrix_to_array(fn);
-                //double *myUN_fn = new double[fn.getRows()*fn.getCols()];
-                //for(int i=0;i<(fn.getRows()*fn.getCols());i++)
-                //        myUN_fn[i] = _fn[i]*myUN;
-		//rh::Matrix m_myUN_fn = rh::Matrix(fn.getRows(),fn.getCols(),myUN_fn);
-		//rh::print_matrix(m_myUN_fn,"m_myUN_fn");
+		Eigen::MatrixXd myUN_fn = myUN*fn;
+		std::cout<<"myUN_fn: \n"<<myUN_fn<<std::endl;
 
 		////F+myUN_fn
 		Eigen::MatrixXd f_myUN_fn = f;
@@ -115,8 +71,8 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
 		std::cout<<"m_fmf_e: \n"<<m_fmf_e<<std::endl;
 
 		//m_fmf_e + kdls@dls
-		//rh::Matrix u = rh::sum_matrix(m_fmf_e , m_kdis_dis);
-		Eigen::MatrixXd u = m_fmf_e;
+		Eigen::MatrixXd u = m_fmf_e + kdis_dis;
+		//Eigen::MatrixXd u = m_fmf_e;
 		std::cout<<"u: \n"<<u<<std::endl;
 
 		uant = usat(umax,u(0,0));

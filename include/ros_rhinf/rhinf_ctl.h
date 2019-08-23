@@ -32,7 +32,8 @@ namespace rh
 
 			//Velocity estimation
 			double win_width = 50.00;
-			double a = 0.50;
+			//double a = 0.50;
+			double a = 1.00;
 
 			float snrm2(int N, float *a, int inca) {return snrm2_(&N,a,&inca);};
 			double* dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC);

@@ -20,63 +20,63 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
         }
         if (t%downsampling==0)
 	{
-		std::cout<<"State: \n"<<state<<std::endl;
+	//	std::cout<<"State: \n"<<state<<std::endl;
 		std::cout<<"Ref: \n"<<reference<<std::endl;
-		std::cout<<"Xant: \n"<<xant<<std::endl;
+	//	std::cout<<"Xant: \n"<<xant<<std::endl;
 
 		Eigen::MatrixXd error = state - reference;
 		std::cout<<"Err: \n"<<error<<std::endl;
 
 		Eigen::MatrixXd error_abs = error.cwiseAbs();
-		std::cout<<"Err_abs: \n"<<error.cwiseAbs()<<std::endl;
+	//	std::cout<<"Err_abs: \n"<<error.cwiseAbs()<<std::endl;
 
 		Eigen::MatrixXd error_exp;
 		error_exp.resize(error.rows(),error.cols());
 		error_exp = error_abs.array().exp().matrix();
-		std::cout<<"Err_exp: \n"<<error_exp<<std::endl;
+	//	std::cout<<"Err_exp: \n"<<error_exp<<std::endl;
 
 		double myUN = (double)(-3.6386 * error_exp.squaredNorm());
-		std::cout<<"MYUN: "<<myUN<<std::endl;
+	//	std::cout<<"MYUN: "<<myUN<<std::endl;
 
 		//An@xant
 		Eigen::MatrixXd an_xant =  an*xant;
-		std::cout<<"An@xant: \n"<<an_xant<<std::endl;
+	//	std::cout<<"An@xant: \n"<<an_xant<<std::endl;
 
 		//Bn*uant
 		Eigen::MatrixXd bn_uant = bn*usat(umax,uant);
-		std::cout<<"bn_uant: \n"<<bn_uant<<std::endl;
+	//	std::cout<<"bn_uant: \n"<<bn_uant<<std::endl;
 
 		//x-an_xant
 		Eigen::MatrixXd x_an_xant = state-an_xant;
-		std::cout<<"x_an_xant: \n"<<x_an_xant<<std::endl;
+	//	std::cout<<"x_an_xant: \n"<<x_an_xant<<std::endl;
 
 		//dls
 		Eigen::MatrixXd dis = x_an_xant-bn_uant;
-		std::cout<<"dis: \n"<<dis<<std::endl;
+	//	std::cout<<"dis: \n"<<dis<<std::endl;
 
 		//Kdls@dls
 		Eigen::MatrixXd kdis_dis = kdis*dis;
-		std::cout<<"kdis_dis: \n"<<kdis_dis<<std::endl;
+	//	std::cout<<"kdis_dis: \n"<<kdis_dis<<std::endl;
 
 		////myUN*Fn
 		Eigen::MatrixXd myUN_fn = myUN*fn;
-		std::cout<<"myUN_fn: \n"<<myUN_fn<<std::endl;
+	//	std::cout<<"myUN_fn: \n"<<myUN_fn<<std::endl;
 
 		////F+myUN_fn
 		Eigen::MatrixXd f_myUN_fn = f;
-		std::cout<<"f_myUN_fn: \n"<<f_myUN_fn<<std::endl;
+	//	std::cout<<"f_myUN_fn: \n"<<f_myUN_fn<<std::endl;
 
 		//f_myUN_fn @ e
 		Eigen::MatrixXd m_fmf_e = f_myUN_fn*error;
-		std::cout<<"m_fmf_e: \n"<<m_fmf_e<<std::endl;
+	//	std::cout<<"m_fmf_e: \n"<<m_fmf_e<<std::endl;
 
 		//m_fmf_e + kdls@dls
 		Eigen::MatrixXd u = m_fmf_e + kdis_dis;
 		//Eigen::MatrixXd u = m_fmf_e;
-		std::cout<<"u: \n"<<u<<std::endl;
+	//	std::cout<<"u: \n"<<u<<std::endl;
 
 		uant = usat(umax,u(0,0));
-		std::cout<<"U_sat: "<<uant<<std::endl;
+	//	std::cout<<"U_sat: "<<uant<<std::endl;
 		xant = state;
                 return uant;
 	}

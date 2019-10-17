@@ -1,4 +1,5 @@
 <launch>
 <rosparam command="load" file="$(find ros_rhinf)/cfg/Axis_X.yaml"/>
+<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv"/>
 <node pkg="ros_rhinf" type="node" name="Mambo_x_axis" output="screen"/>
 </launch>

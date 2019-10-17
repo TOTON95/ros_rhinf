@@ -17,9 +17,9 @@ rhinfObject::rhinfObject()
 	n_priv.param<double>("/downsampling",_downsampling, 17);
 	n_priv.param<double>("/sample_time", _sample_time,0.01);
 	n_priv.param<double>("/saturation", _saturation, 1);
-	n_priv.param<std::string>("/topic_controller", s_ctl, "control_effort");
-	n_priv.param<std::string>("/topic_state", s_state, "state");
-	n_priv.param<std::string>("/topic_ref", s_ref, "reference");
+	n_priv.param<std::string>("topic_controller", s_ctl, "control_effort");
+	n_priv.param<std::string>("topic_state", s_state, "state");
+	n_priv.param<std::string>("topic_ref", s_ref, "reference");
 
 	if(!n_priv.getParam("/AN", an_param) || !n_priv.getParam("/AN_dim", d_an_param))
 	{
@@ -132,8 +132,25 @@ void rhinfObject::calc()
 		//std::cout<<"prev_t: "<<prev_t.toSec()-init_t.toSec()<<std::endl;
 
 		//Creating state and reference structure
-		Matrix m_state(_state.size(),1,vector2array(_state));
-		Matrix m_ref(_reference.size(),1,vector2array(_reference));
+		Eigen::MatrixXd m_state(2,2), m_ref(2,2);
+
+		//std::cout<<"state_size:"<<_state.size()<<std::endl;
+		//std::cout<<"m_state:"<<m_state.size()<<std::endl;
+
+		//Resize them
+		m_state.resize(_state.size(), 1);
+		m_ref.resize(_reference.size(),1);
+
+		//Retrieve data
+		double* _state_data = vector2array(_state);
+		double* _reference_data = vector2array(_reference); 
+
+		//Fill them
+		for(int i=0;i<_state.size();i++)
+		{
+			m_state(i,0) = _state_data[i];
+			m_ref(i,0) = _reference_data[i];
+		}
 
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);

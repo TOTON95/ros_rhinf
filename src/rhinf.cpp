@@ -14,9 +14,9 @@ rhinfObject::rhinfObject()
 	}
 	
 	//Get parameters
-	n_priv.param<double>("/downsampling",_downsampling, 17);
-	n_priv.param<double>("/sample_time", _sample_time,0.01);
-	n_priv.param<double>("/saturation", _saturation, 1);
+	n_priv.param<double>("downsampling",_downsampling, 17);
+	n_priv.param<double>("sample_time", _sample_time,0.01);
+	n_priv.param<double>("saturation", _saturation, 1);
 	n_priv.param<std::string>("topic_controller", s_ctl, "control_effort");
 	n_priv.param<std::string>("topic_state", s_state, "state");
 	n_priv.param<std::string>("topic_ref", s_ref, "reference");

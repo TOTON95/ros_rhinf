@@ -27,6 +27,8 @@ namespace rh
 			Eigen::MatrixXd an, bn, fn, f, kdis;
 			Eigen::MatrixXd xant;
 			double uant = 0;
+			double uant2 = 0;
+			unsigned char c_uant= 0;
 			double umax = 1;
 			int downsampling = 1;
 

@@ -5,6 +5,7 @@
 #include <std_msgs/Float64.h>
 #include <vector>
 #include <iostream>
+#include <string>
 
 #define PI 3.141592653589793238462
 
@@ -116,6 +117,8 @@ int main(int argc, char** argv)
 	ros::Subscriber drone_sub;
 	ros::Subscriber ros_ref_x,ros_ref_y;
 
+	std::string mocap_name;
+
 	if(!n.getParam("sample_time",s_t))
 	{
 		ROS_ERROR_STREAM("Failed to get sample time. Terminating.");
@@ -130,15 +133,22 @@ int main(int argc, char** argv)
                 exit(EXIT_FAILURE);
 	}
 
-	drone_sub = n.subscribe("/vicon/Mambo_5/Mambo_5",1000,getDronePos);
-	ros_ref_x = n.subscribe("/setpoint_pos_X",1000,getSetpointX);
-	ros_ref_y = n.subscribe("/setpoint_pos_Y",1000,getSetpointY);
-	out_x = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st_x",1000);
-	ref_x = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref_x",1000);
-	out_y = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st_y",1000);
-	ref_y = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref_y",1000);
-	out_z = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st_z",1000);
-	ref_z = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref_z",1000);
+	if(!n.getParam("mocap_name",mocap_name))
+	{
+		ROS_ERROR_STREAM("Failed to get the name of vehicle. Terminating.");
+                ros::shutdown();
+                exit(EXIT_FAILURE);
+	}
+
+	drone_sub = n.subscribe("/vicon/"+ mocap_name +"/" + mocap_name,1000,getDronePos);
+	ros_ref_x = n.subscribe("setpoint_pos_X",1000,getSetpointX);
+	ros_ref_y = n.subscribe("setpoint_pos_Y",1000,getSetpointY);
+	out_x = n.advertise<std_msgs::Float64MultiArray>("rhinf_st_x",1000);
+	ref_x = n.advertise<std_msgs::Float64MultiArray>("rhinf_ref_x",1000);
+	out_y = n.advertise<std_msgs::Float64MultiArray>("rhinf_st_y",1000);
+	ref_y = n.advertise<std_msgs::Float64MultiArray>("rhinf_ref_y",1000);
+	out_z = n.advertise<std_msgs::Float64MultiArray>("rhinf_st_z",1000);
+	ref_z = n.advertise<std_msgs::Float64MultiArray>("rhinf_ref_z",1000);
 
 	out_msg_x.data.resize((int)dim.back());
 	ref_msg_x.data.resize((int)dim.back());

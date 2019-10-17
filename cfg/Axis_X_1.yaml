@@ -1,0 +1,43 @@
+#Controller for X-Axis Mambo Drone
+
+#Downsampling
+downsampling: 17
+
+#Sample time
+sample_time: 0.01
+
+#Saturation
+saturation: 1
+
+#Topic for controller's output
+topic_controller: "control_effort_pos_X"
+
+#Topic for state's input
+topic_state: "rhinf_st_x"
+
+#Topic for reference's input
+topic_ref: "rhinf_ref_x"
+
+#AN
+AN: [1.0,1.0,0.0,0.99851729]
+AN_dim: [2,2]
+
+#BN
+BN: [0.0, 0.0002362]
+BN_dim: [2,1]
+
+#FN
+#FN: [0.00140837, 0.02207816]
+FN: [0.0, 0.0]
+FN_dim: [1,2]
+
+#F
+#F: [-3.52718328, -269.24932787]
+#F: [-0.42715806, -247.11742768]
+F: [-1.07280916, -105.60960032]
+F_dim: [1,2]
+
+#Kdis
+#KDIS: [0.0,-4233.78427452]
+KDIS: [0.0,0.0]
+KDIS_dim: [1,2]

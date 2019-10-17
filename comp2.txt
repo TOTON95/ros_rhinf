@@ -1,0 +1,50 @@
+diff --git a/src/rhinf_ctl.cpp b/src/rhinf_ctl.cpp
+index 7878f7c..20d54d9 100644
+--- a/src/rhinf_ctl.cpp
++++ b/src/rhinf_ctl.cpp
+@@ -17,15 +17,24 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
+                 xant = Eigen::MatrixXd(2,1);
+ 		xant << 0,0;
+                 uant = 0;
++		uant2 = 0;
+         }
+         if (t%downsampling==0)
+ 	{
++
++		if(c_uant >= 2)
++		{
++			printf("%d\n",t);
++			uant2 = uant;
++			c_uant = 0;
++		}
++
+ 	//	std::cout<<"State: \n"<<state<<std::endl;
+-		std::cout<<"Ref: \n"<<reference<<std::endl;
++	//	std::cout<<"Ref: \n"<<reference<<std::endl;
+ 	//	std::cout<<"Xant: \n"<<xant<<std::endl;
+ 
+ 		Eigen::MatrixXd error = state - reference;
+-		std::cout<<"Err: \n"<<error<<std::endl;
++	//	std::cout<<"Err: \n"<<error<<std::endl;
+ 
+ 		Eigen::MatrixXd error_abs = error.cwiseAbs();
+ 	//	std::cout<<"Err_abs: \n"<<error.cwiseAbs()<<std::endl;
+@@ -43,7 +52,7 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
+ 	//	std::cout<<"An@xant: \n"<<an_xant<<std::endl;
+ 
+ 		//Bn*uant
+-		Eigen::MatrixXd bn_uant = bn*usat(umax,uant);
++		Eigen::MatrixXd bn_uant = bn*usat(umax,uant2);
+ 	//	std::cout<<"bn_uant: \n"<<bn_uant<<std::endl;
+ 
+ 		//x-an_xant
+@@ -78,6 +87,9 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
+ 		uant = usat(umax,u(0,0));
+ 	//	std::cout<<"U_sat: "<<uant<<std::endl;
+ 		xant = state;
++
++		c_uant++;
++
+                 return uant;
+ 	}
+ 	else

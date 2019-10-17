@@ -1,4 +1,4 @@
-#Controller for X-Axis Mambo Drone
+#Controller for XY-Axis Mambo Drone
 
 #Downsampling
 downsampling: 17
@@ -8,15 +8,6 @@ sample_time: 0.01
 
 #Saturation
 saturation: 1
-
-#Topic for controller's output
-topic_controller: "control_effort_pos_X"
-
-#Topic for state's input
-topic_state: "rhinf_st"
-
-#Topic for reference's input
-topic_ref: "rhinf_ref"
 
 #AN
 AN: [1.0,1.0,0.0,0.99851729]

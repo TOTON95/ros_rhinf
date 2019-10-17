@@ -2,20 +2,28 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <tf/transform_datatypes.h>
+#include <std_msgs/Float64.h>
 #include <vector>
-#include <ros_rhinf/matrix.h>
+#include <iostream>
 
 #define PI 3.141592653589793238462
 
 double heading = 0;
 double s_t = 0;
 std::vector<double> dim;
-double vel = 0;
-double prev_p = 0;
-std_msgs::Float64MultiArray out_msg_x, ref_msg_x;
+double vel_x,vel_y,vel_z = 0;
+double prev_p_x,prev_p_y,prev_p_z = 0;
+std_msgs::Float64MultiArray out_msg_x, ref_msg_x, out_msg_y, ref_msg_y, out_msg_z, ref_msg_z;
 ros::Time s0_t, s1_t;
-ros::Publisher out;
-ros::Publisher ref_out;
+ros::Publisher out_x,out_y,out_z;
+ros::Publisher ref_x,ref_y,ref_z;
+
+double stp_x = 0;
+double stp_y = 0;
+
+//double a = 0.50;
+double a = 1.00;
+double prev_vel_x,prev_vel_y,prev_vel_z = 0.00;
 
 struct v_object                                                         //Structure that describes the properties of the object
 {
@@ -50,14 +58,55 @@ void getDronePos(const geometry_msgs::TransformStamped::ConstPtr& pos)  //Functi
         drone.abs_y = drone._posY;                                      //Set the absolute position of the drone in Y
 }
 
-void setOutMsg()
+void getSetpointX(const std_msgs::Float64::ConstPtr& msg)
 {
-	double vel = drone._posX - prev_p;
+	stp_x = msg->data;	
+}
+
+void getSetpointY(const std_msgs::Float64::ConstPtr& msg)
+{
+	stp_y = msg->data;	
+}
+
+
+//Discrete velocity 
+void velocity_w_filter()
+{
+	//Calculate velocity
+	vel_x = (1-a)*prev_vel_x+a*(drone._posX - prev_p_x);
+	vel_y = (1-a)*prev_vel_y+a*(drone._posY - prev_p_y);
+	vel_z = (1-a)*prev_vel_z+a*(drone._posZ - prev_p_z);
+
+	//Set messages
 	out_msg_x.data[0] = drone._posX;
-        out_msg_x.data[1] = vel;
-	out.publish(out_msg_x);
-	ref_out.publish(ref_msg_x);
-        prev_p = drone._posX;
+	out_msg_x.data[1] = vel_x;
+	out_msg_y.data[0] = drone._posY;
+	out_msg_y.data[1] = vel_y;
+	out_msg_z.data[0] = drone._posZ;
+	out_msg_z.data[1] = vel_z;
+
+	ref_msg_x.data[0] = stp_x;
+	ref_msg_x.data[1] = 0;
+	ref_msg_y.data[0] = stp_y;
+	ref_msg_y.data[1] = 0;
+	ref_msg_z.data[0] = 0;
+	ref_msg_z.data[1] = 0;
+	
+	//Publish messages
+	out_x.publish(out_msg_x);
+	ref_x.publish(ref_msg_x);
+	out_y.publish(out_msg_y);
+	ref_y.publish(ref_msg_y);
+	out_z.publish(out_msg_z);
+	ref_z.publish(ref_msg_z);
+
+	//Record previous values
+	prev_p_x = drone._posX;
+	prev_vel_x = vel_x;
+	prev_p_y = drone._posY;
+	prev_vel_y = vel_y;
+	prev_p_z = drone._posZ;
+	prev_vel_z = vel_z;
 }
 
 int main(int argc, char** argv)
@@ -65,6 +114,7 @@ int main(int argc, char** argv)
 	ros::init(argc,argv,"rhinf_converter"); //Initiates the ROS node
 	ros::NodeHandle n;
 	ros::Subscriber drone_sub;
+	ros::Subscriber ros_ref_x,ros_ref_y;
 
 	if(!n.getParam("sample_time",s_t))
 	{
@@ -81,28 +131,53 @@ int main(int argc, char** argv)
 	}
 
 	drone_sub = n.subscribe("/vicon/Mambo_5/Mambo_5",1000,getDronePos);
-	out = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st",1000);
-	ref_out = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref",1000);
+	ros_ref_x = n.subscribe("/setpoint_pos_X",1000,getSetpointX);
+	ros_ref_y = n.subscribe("/setpoint_pos_Y",1000,getSetpointY);
+	out_x = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st_x",1000);
+	ref_x = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref_x",1000);
+	out_y = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st_y",1000);
+	ref_y = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref_y",1000);
+	out_z = n.advertise<std_msgs::Float64MultiArray>("/rhinf_st_z",1000);
+	ref_z = n.advertise<std_msgs::Float64MultiArray>("/rhinf_ref_z",1000);
 
 	out_msg_x.data.resize((int)dim.back());
 	ref_msg_x.data.resize((int)dim.back());
+	out_msg_y.data.resize((int)dim.back());
+	ref_msg_y.data.resize((int)dim.back());
+	out_msg_z.data.resize((int)dim.back());
+	ref_msg_z.data.resize((int)dim.back());
 	
 	out_msg_x.data[0] = drone._posX;
-	out_msg_x.data[1] = vel;
-	prev_p = drone._posX;
+	out_msg_x.data[1] = vel_x;
+	prev_p_x = drone._posX;
 
-	ref_msg_x.data[0] = 0;
+	out_msg_y.data[0] = drone._posY;
+	out_msg_y.data[1] = vel_y;
+	prev_p_y = drone._posY;
+
+	out_msg_z.data[0] = drone._posZ;
+	out_msg_z.data[1] = vel_z;
+	prev_p_z = drone._posZ;
+
+	ref_msg_x.data[0] = stp_x;
 	ref_msg_x.data[1] = 0;
+	ref_msg_y.data[0] = stp_y;
+	ref_msg_y.data[1] = 0;
+	ref_msg_z.data[0] = 0;
+	ref_msg_z.data[1] = 0;
 
-	out.publish(out_msg_x);
-	ref_out.publish(ref_msg_x);
+	out_x.publish(out_msg_x);
+	ref_x.publish(ref_msg_x);
+	out_y.publish(out_msg_y);
+	ref_y.publish(ref_msg_y);
+	out_z.publish(out_msg_z);
+	ref_z.publish(ref_msg_z);
 
 
 	while(n.ok())
 	{
 		ros::spinOnce();
-		setOutMsg();	
-		ROS_INFO("POS: %lf VEL: %lf",out_msg_x.data[0],out_msg_x.data[1]);
+		velocity_w_filter();
 		ros::Duration(s_t).sleep();
 	}
 }

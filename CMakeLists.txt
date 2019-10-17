@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 2.8.3)
 project(ros_rhinf)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+ add_compile_options(-std=c++11)
+
+## Optimizations
+ set(CMAKE_CXX_FLAGS "-O3")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -17,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 
 find_package(BLAS REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -153,6 +157,7 @@ include_directories(
  target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
    blas
+   Eigen3::Eigen
  )
 
  target_link_libraries(${PROJECT_NAME}_conv_node ${catkin_LIBRARIES})

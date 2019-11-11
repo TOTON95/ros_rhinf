@@ -75,8 +75,12 @@ namespace rh
 			ros::Publisher _control_effort_pub;
 			std::string s_ctl, s_state, s_ref;
 
+
 			std_msgs::Float64 ctl_msg;
 			std_msgs::Float64MultiArray state, reference;
+
+			ros::Publisher _dis_pub;
+			std_msgs::Float64MultiArray dis_out;
 	};	
 }
 #endif

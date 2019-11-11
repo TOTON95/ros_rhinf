@@ -10,6 +10,11 @@ rh::rhinf_ctl::~rhinf_ctl()
 {
 }
 
+std::vector<double>& rh::rhinf_ctl::getDis()
+{
+	return dis_out;
+}
+
 double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference, int t)
 {
 	if (t == 0)
@@ -22,16 +27,9 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
         if (t%downsampling==0)
 	{
 
-		if(c_uant >= 2)
-		{
-			printf("%d\n",t);
-			uant2 = uant;
-			c_uant = 0;
-		}
-
 	//	std::cout<<"State: \n"<<state<<std::endl;
 	//	std::cout<<"Ref: \n"<<reference<<std::endl;
-	//	std::cout<<"Xant: \n"<<xant<<std::endl;
+	//	std::c	std::cout<<"Xant: \n"<<xant<<std::endl;
 
 		Eigen::MatrixXd error = state - reference;
 	//	std::cout<<"Err: \n"<<error<<std::endl;
@@ -52,7 +50,7 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
 	//	std::cout<<"An@xant: \n"<<an_xant<<std::endl;
 
 		//Bn*uant
-		Eigen::MatrixXd bn_uant = bn*usat(umax,uant2);
+		Eigen::MatrixXd bn_uant = bn*(umax,uant2);
 	//	std::cout<<"bn_uant: \n"<<bn_uant<<std::endl;
 
 		//x-an_xant
@@ -61,6 +59,8 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
 
 		//dls
 		Eigen::MatrixXd dis = x_an_xant-bn_uant;
+		std::vector<double> temp_dis(dis.data(),dis.data()+dis.rows()*dis.cols());
+		dis_out = temp_dis;
 	//	std::cout<<"dis: \n"<<dis<<std::endl;
 
 		//Kdls@dls
@@ -72,7 +72,7 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
 	//	std::cout<<"myUN_fn: \n"<<myUN_fn<<std::endl;
 
 		////F+myUN_fn
-		Eigen::MatrixXd f_myUN_fn = f;
+		Eigen::MatrixXd f_myUN_fn = f+myUN_fn;
 	//	std::cout<<"f_myUN_fn: \n"<<f_myUN_fn<<std::endl;
 
 		//f_myUN_fn @ e
@@ -84,18 +84,27 @@ double rh::rhinf_ctl::update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,
 		//Eigen::MatrixXd u = m_fmf_e;
 	//	std::cout<<"u: \n"<<u<<std::endl;
 
-		uant = usat(umax,u(0,0));
+
+		//Save u
+		double u_out = usat(umax,u(0,0));
 	//	std::cout<<"U_sat: "<<uant<<std::endl;
+
+		//Save uant2
+		uant2 = uant;
+
+		//Save last values
 		xant = state;
+		uant = u_out;
 
-		c_uant++;
+	//	std::cout<<"Uant: "<<uant<<std::endl;
+	//	std::cout<<"Uant2: "<<uant2<<std::endl;
 
-                return uant;
+                return u_out;
 	}
 	else
 	{
 		xant = state;
-		return usat(umax,uant);
+		return uant;
 	}
 }
 
@@ -181,7 +190,7 @@ int* rh::rhinf_ctl::extract_dims(std::vector<std::vector<int>> dims)
 	return dimensions;
 }
 
-double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC)
+/*double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC)
 {
 	if( _numColA != _numRowB )
 	{
@@ -195,9 +204,9 @@ double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _num
 	char trans = 'N';
 	double alpha = 1.0 , beta = 0.0;
 	double *C = new double [ _numRowC * _numColC ];
-	/*int lda = ( _numRowA >= _numColA ) ? _numRowA : _numColA;
-	int ldb = ( _numRowB >= _numColB ) ? _numRowB : _numColB;
-	int ldc = ( _numRowC >= _numColC ) ? _numRowC : _numColC;*/
+	//int lda = ( _numRowA >= _numColA ) ? _numRowA : _numColA;
+	//int ldb = ( _numRowB >= _numColB ) ? _numRowB : _numColB;
+	//int ldc = ( _numRowC >= _numColC ) ? _numRowC : _numColC;
 	int lda = _numRowA;
 	int ldb = _numRowB;
 	int ldc = _numRowC;
@@ -205,14 +214,18 @@ double* rh::rhinf_ctl::dgemm(int _numRowA , int _numColA , double* _A , int _num
 
 	return C;
 
-}
+}*/
 
 double rh::rhinf_ctl::usat(double umax, double u)
 {
 	double n_u = u;
-        if(n_u > umax)
-                n_u = umax;
-        if(n_u < -umax)
-                n_u = -umax;
-        return n_u;
+	if(n_u > umax)
+	{
+		n_u = umax;
+	}
+	if(n_u < -umax)
+	{
+		n_u = -umax;
+	}
+	return n_u;
 }

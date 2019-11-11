@@ -21,35 +21,35 @@ rhinfObject::rhinfObject()
 	n_priv.param<std::string>("topic_state", s_state, "state");
 	n_priv.param<std::string>("topic_ref", s_ref, "reference");
 
-	if(!n_priv.getParam("/AN", an_param) || !n_priv.getParam("/AN_dim", d_an_param))
+	if(!n_priv.getParam("AN", an_param) || !n_priv.getParam("AN_dim", d_an_param))
 	{
 		ROS_ERROR_STREAM("Failed to import AN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/BN", bn_param) || !n_priv.getParam("/BN_dim", d_bn_param))
+	if(!n_priv.getParam("BN", bn_param) || !n_priv.getParam("BN_dim", d_bn_param))
 	{
 		ROS_ERROR_STREAM("Failed to import BN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/FN", fn_param) || !n_priv.getParam("/FN_dim", d_fn_param))
+	if(!n_priv.getParam("FN", fn_param) || !n_priv.getParam("FN_dim", d_fn_param))
 	{
 		ROS_ERROR_STREAM("Failed to import FN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/F", f_param) || !n_priv.getParam("/F_dim", d_f_param))
+	if(!n_priv.getParam("F", f_param) || !n_priv.getParam("F_dim", d_f_param))
 	{
 		ROS_ERROR_STREAM("Failed to import F parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/KDIS", kdis_param) || !n_priv.getParam("/KDIS_dim", d_kdis_param))
+	if(!n_priv.getParam("KDIS", kdis_param) || !n_priv.getParam("KDIS_dim", d_kdis_param))
 	{
 		ROS_ERROR_STREAM("Failed to import KDIS parameters. Terminating.");
 		ros::shutdown();
@@ -68,6 +68,9 @@ rhinfObject::rhinfObject()
 
 	//Init publishers and subscribers
 	_control_effort_pub = node.advertise<std_msgs::Float64>(s_ctl, 1);
+
+	//Debug
+	_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_dis",1);
 
 	ros::Subscriber state_sub = node.subscribe(s_state, 1, &rhinfObject::stateCallback, this);
 	ros::Subscriber ref_sub = node.subscribe(s_ref, 1, &rhinfObject::refCallback, this);
@@ -155,13 +158,26 @@ void rhinfObject::calc()
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);
 
+		//DEBUG
+		std::vector<double> vec = ctl.getDis();
+//		dis_out.layout.dim.push_back(std_msgs::MultiArrayDimension());
+//		dis_out.layout.dim[0].size = vec.size();
+//		dis_out.layout.dim[0].stride = 1;
+
+		dis_out.data.clear();
+		dis_out.data.insert(dis_out.data.end(), vec.begin(), vec.end());
+
 		exec_t = ros::Time::now();
 
-		//std::cout<<"Output: "<<output<<std::endl;
+	//	std::cout<<"Output: "<<output<<std::endl;
 
 		//Send output signal
 		ctl_msg.data = output;
 		_control_effort_pub.publish(ctl_msg);
+
+
+		//DEBUG
+		_dis_pub.publish(dis_out);
 			
 		//std::cout<<"exec_t: "<<exec_t.toSec()-init_t.toSec()<<std::endl;
 		sleep_t = sampling_t - (exec_t - init_t);

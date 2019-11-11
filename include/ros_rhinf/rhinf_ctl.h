@@ -22,13 +22,13 @@ namespace rh
 			~rhinf_ctl();
 			double update(Eigen::MatrixXd &state, Eigen::MatrixXd &reference,int t);
 			bool load_param(std::vector<std::vector<std_msgs::Float64>> params,std::vector<std::vector<int>> dims, double umax, int ds);
+			std::vector<double>& getDis();
 
 		private:
 			Eigen::MatrixXd an, bn, fn, f, kdis;
 			Eigen::MatrixXd xant;
 			double uant = 0;
 			double uant2 = 0;
-			unsigned char c_uant= 0;
 			double umax = 1;
 			int downsampling = 1;
 
@@ -36,6 +36,9 @@ namespace rh
 			double win_width = 50.00;
 			//double a = 0.50;
 			double a = 1.00;
+
+			//Expose data
+			std::vector<double> dis_out;
 
 			float snrm2(int N, float *a, int inca) {return snrm2_(&N,a,&inca);};
 			double* dgemm(int _numRowA , int _numColA , double* _A , int _numRowB , int _numColB , double* _B , int& _numRowC , int& _numColC);

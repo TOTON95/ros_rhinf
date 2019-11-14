@@ -79,8 +79,48 @@ namespace rh
 			std_msgs::Float64 ctl_msg;
 			std_msgs::Float64MultiArray state, reference;
 
+			//DEBUG
 			ros::Publisher _dis_pub;
 			std_msgs::Float64MultiArray dis_out;
+			
+			ros::Publisher _disf_pub;
+			std_msgs::Float64MultiArray disf_out;
+			
+			ros::Publisher _disfant_pub;
+			std_msgs::Float64MultiArray disfant_out;
+			
+			ros::Publisher _error_pub;
+			std_msgs::Float64MultiArray error_out;
+			
+			ros::Publisher _error_abs_pub;
+			std_msgs::Float64MultiArray error_abs_out;
+			
+			ros::Publisher _error_exp_pub;
+			std_msgs::Float64MultiArray error_exp_out;
+			
+			ros::Publisher _myUN_pub;
+			std_msgs::Float64 myUN_out;
+
+			ros::Publisher _an_xant_pub;
+			std_msgs::Float64MultiArray an_xant_out;
+
+			ros::Publisher _bn_uant_pub;
+			std_msgs::Float64MultiArray bn_uant_out;
+
+			ros::Publisher _x_an_xant_pub;
+			std_msgs::Float64MultiArray x_an_xant_out;
+			
+			ros::Publisher _kdis_dis_pub;
+			std_msgs::Float64MultiArray kdis_dis_out;
+
+			ros::Publisher _myUN_fn_pub;
+			std_msgs::Float64MultiArray myUN_fn_out;
+
+			ros::Publisher _f_myUN_fn_pub;
+			std_msgs::Float64MultiArray f_myUN_fn_out;
+
+			ros::Publisher _m_fmf_e_pub;
+			std_msgs::Float64MultiArray m_fmf_e_out;
 	};	
 }
 #endif

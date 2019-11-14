@@ -1,6 +1,6 @@
 <launch>
-<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
-<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv"/>
+<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv" output="screen"/>
+	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
 <node pkg="ros_rhinf" type="node" name="Mambo_x_axis" output="screen">
 	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
 	<param name="topic_controller" type="str" value="control_effort_pos_X"/>

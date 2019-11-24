@@ -54,6 +54,22 @@ namespace rh
 			double a = 1.00;
 			double b = 1.00;
 
+			//Calculations matrices
+			Eigen::MatrixXd error;
+			Eigen::MatrixXd error_abs;
+			Eigen::MatrixXd error_exp;
+			Eigen::MatrixXd i_d;
+			Eigen::MatrixXd an_xant;
+			Eigen::MatrixXd bn_uant;
+			Eigen::MatrixXd x_an_xant;
+			Eigen::MatrixXd dis;
+			Eigen::MatrixXd disf;
+			Eigen::MatrixXd kdis_dis;
+			Eigen::MatrixXd myUN_fn;
+			Eigen::MatrixXd f_myUN_fn;
+			Eigen::MatrixXd m_fmf_e;
+			Eigen::MatrixXd u;
+
 			//Expose data
 			std::vector<double> dis_out;
 			std::vector<double> disf_out;

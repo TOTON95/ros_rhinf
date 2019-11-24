@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 	ros::init(argc,argv,"rhinf_converter"); //Initiates the ROS node
 	ros::NodeHandle n;
 	ros::Subscriber drone_sub;
-	ros::Subscriber ros_ref_x,ros_ref_y;
+	ros::Subscriber ros_ref_x,ros_ref_y, ros_st_x, ros_st_y;
 
 	std::string mocap_name;
 

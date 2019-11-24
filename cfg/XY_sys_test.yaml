@@ -1,4 +1,5 @@
 #Controller for XY-Axis Mambo Drone
+mocap_name: "Mambo_5"
 
 #Downsampling
 downsampling: 17

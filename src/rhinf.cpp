@@ -70,23 +70,39 @@ rhinfObject::rhinfObject()
 	_control_effort_pub = node.advertise<std_msgs::Float64>(s_ctl, 1);
 
 	//Debug
-	_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_dis",1);
-	_disf_pub = node.advertise<std_msgs::Float64MultiArray>("d_disf",1);
-	_disfant_pub = node.advertise<std_msgs::Float64MultiArray>("d_disfant",1);
-	_error_pub = node.advertise<std_msgs::Float64MultiArray>("d_error",1);
-	_error_abs_pub = node.advertise<std_msgs::Float64MultiArray>("d_error_abs",1);
-	_error_exp_pub = node.advertise<std_msgs::Float64MultiArray>("d_error_exp",1);
-	_myUN_pub = node.advertise<std_msgs::Float64>("d_myUN",1);
-	_an_xant_pub = node.advertise<std_msgs::Float64MultiArray>("d_an_xant",1);
-	_bn_uant_pub = node.advertise<std_msgs::Float64MultiArray>("d_bn_uant",1);
-	_x_an_xant_pub = node.advertise<std_msgs::Float64MultiArray>("d_x_an_xant",1);
-	_kdis_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_kdis_dis",1);
-	_myUN_fn_pub = node.advertise<std_msgs::Float64MultiArray>("d_myUN_fn",1);
-	_f_myUN_fn_pub = node.advertise<std_msgs::Float64MultiArray>("d_f_myUN_fn",1);
-	_m_fmf_e_pub = node.advertise<std_msgs::Float64MultiArray>("d_m_fmf_e",1);
+//	_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_dis",1);
+//	_disf_pub = node.advertise<std_msgs::Float64MultiArray>("d_disf",1);
+//	_disfant_pub = node.advertise<std_msgs::Float64MultiArray>("d_disfant",1);
+//	_error_pub = node.advertise<std_msgs::Float64MultiArray>("d_error",1);
+//	_error_abs_pub = node.advertise<std_msgs::Float64MultiArray>("d_error_abs",1);
+//	_error_exp_pub = node.advertise<std_msgs::Float64MultiArray>("d_error_exp",1);
+//	_myUN_pub = node.advertise<std_msgs::Float64>("d_myUN",1);
+//	_an_xant_pub = node.advertise<std_msgs::Float64MultiArray>("d_an_xant",1);
+//	_bn_uant_pub = node.advertise<std_msgs::Float64MultiArray>("d_bn_uant",1);
+//	_x_an_xant_pub = node.advertise<std_msgs::Float64MultiArray>("d_x_an_xant",1);
+//	_kdis_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_kdis_dis",1);
+//	_myUN_fn_pub = node.advertise<std_msgs::Float64MultiArray>("d_myUN_fn",1);
+//	_f_myUN_fn_pub = node.advertise<std_msgs::Float64MultiArray>("d_f_myUN_fn",1);
+//	_m_fmf_e_pub = node.advertise<std_msgs::Float64MultiArray>("d_m_fmf_e",1);
+
+	_dis_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_dis",1);
+	_disf_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_disf",1);
+	_disfant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_disfant",1);
+	_error_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_error",1);
+	_error_abs_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_error_abs",1);
+	_error_exp_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_error_exp",1);
+	_myUN_pub = n_priv.advertise<std_msgs::Float64>("d_myUN",1);
+	_an_xant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_an_xant",1);
+	_bn_uant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_bn_uant",1);
+	_x_an_xant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_x_an_xant",1);
+	_kdis_dis_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_kdis_dis",1);
+	_myUN_fn_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_myUN_fn",1);
+	_f_myUN_fn_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_f_myUN_fn",1);
+	_m_fmf_e_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_m_fmf_e",1);
 
 	ros::Subscriber state_sub = node.subscribe(s_state, 1, &rhinfObject::stateCallback, this);
 	ros::Subscriber ref_sub = node.subscribe(s_ref, 1, &rhinfObject::refCallback, this);
+	ros::Subscriber dis_sub = node.subscribe("dis_enable", 1, &rhinfObject::disCallback, this);
 
 	if(!state_sub || !ref_sub)
 	{
@@ -171,26 +187,33 @@ void rhinfObject::calc()
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);
 
+        //Enable disturbance estimation?
+        ctl.enable_dis(dis_enabled);
+
 		//DEBUG
-		std::vector<double> vec = ctl.getDis();
+		std::vector<double> vec;
 //		dis_out.layout.dim.push_back(std_msgs::MultiArrayDimension());
 //		dis_out.layout.dim[0].size = vec.size();
 //		dis_out.layout.dim[0].stride = 1;
 
-		//DIS
-		dis_out.data.clear();
-		dis_out.data.insert(dis_out.data.end(), vec.begin(), vec.end());
+        if(dis_enabled)
+        {
+            //DIS
+            vec = ctl.getDis();
+            dis_out.data.clear();
+            dis_out.data.insert(dis_out.data.end(), vec.begin(), vec.end());
 
-		//DISF
-		vec = ctl.getDisf();
-		disf_out.data.clear();
-		disf_out.data.insert(disf_out.data.end(), vec.begin(), vec.end());
-		
-		//DISFANT
-		vec = ctl.getDisfant();
-		disfant_out.data.clear();
-		disfant_out.data.insert(disfant_out.data.end(), vec.begin(), vec.end());
-		
+            //DISF
+            vec = ctl.getDisf();
+            disf_out.data.clear();
+            disf_out.data.insert(disf_out.data.end(), vec.begin(), vec.end());
+
+            //DISFANT
+            vec = ctl.getDisfant();
+            disfant_out.data.clear();
+            disfant_out.data.insert(disfant_out.data.end(), vec.begin(), vec.end());
+
+        }
 		//ERROR
 		vec = ctl.getError();
 		error_out.data.clear();
@@ -218,17 +241,23 @@ void rhinfObject::calc()
 		vec = ctl.getBNUANT();
 		bn_uant_out.data.clear();
 		bn_uant_out.data.insert(bn_uant_out.data.end(), vec.begin(), vec.end());
-		
-		//XANXANT
-		vec = ctl.getXANXANT();
-		x_an_xant_out.data.clear();
-		x_an_xant_out.data.insert(x_an_xant_out.data.end(), vec.begin(), vec.end());
-		
-		//KDISDIS
-		vec = ctl.getKDISDIS();
-		kdis_dis_out.data.clear();
-		kdis_dis_out.data.insert(kdis_dis_out.data.end(), vec.begin(), vec.end());
-		
+
+        //XANXANT
+        vec = ctl.getXANXANT();
+        x_an_xant_out.data.clear();
+        x_an_xant_out.data.insert(x_an_xant_out.data.end(), vec.begin(), vec.end());
+
+
+        if(dis_enabled)
+        {
+
+            //KDISDIS
+            vec = ctl.getKDISDIS();
+            kdis_dis_out.data.clear();
+            kdis_dis_out.data.insert(kdis_dis_out.data.end(), vec.begin(), vec.end());
+
+        }
+
 		//MyUNFN
 		vec = ctl.getMyUNFN();
 		myUN_fn_out.data.clear();
@@ -255,17 +284,21 @@ void rhinfObject::calc()
 
 
 		//DEBUG
-		_dis_pub.publish(dis_out);
-		_disf_pub.publish(disf_out);
-		_disfant_pub.publish(disfant_out);
-		_error_pub.publish(error_out);
+        if(dis_enabled)
+        {
+            _dis_pub.publish(dis_out);
+            _disf_pub.publish(disf_out);
+            _disfant_pub.publish(disfant_out);
+            _kdis_dis_pub.publish(kdis_dis_out);
+        }
+        
+        _error_pub.publish(error_out);
 		_error_abs_pub.publish(error_abs_out);
 		_error_exp_pub.publish(error_exp_out);
 		_myUN_pub.publish(myUN_out);
 		_an_xant_pub.publish(an_xant_out);
 		_bn_uant_pub.publish(bn_uant_out);
 		_x_an_xant_pub.publish(x_an_xant_out);
-		_kdis_dis_pub.publish(kdis_dis_out);
 		_myUN_fn_pub.publish(myUN_fn_out);
 		_f_myUN_fn_pub.publish(f_myUN_fn_out);
 		_m_fmf_e_pub.publish(m_fmf_e_out);
@@ -392,4 +425,8 @@ void rhinfObject::refCallback(const std_msgs::Float64MultiArray& ref_msg)
 {
 	_reference = ref_msg.data;
 	need_to_refresh = true;
+}
+void rhinfObject::disCallback(const std_msgs::Bool& dis_msg)
+{
+	dis_enabled = dis_msg.data;
 }

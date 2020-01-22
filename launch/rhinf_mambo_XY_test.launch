@@ -1,15 +1,31 @@
 <launch>
-<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv" output="screen"/>
+<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv_X" output="screen">
 	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
+	<param name="state_topic" type="str" value="state_pos_X"/>
+	<param name="reference_topic" type="str" value="setpoint_pos_X"/>
+	<param name="out_state_topic" type="str" value="rhinf_st_x"/>
+	<param name="out_reference_topic" type="str" value="rhinf_ref_x"/>
+</node>
+
 <node pkg="ros_rhinf" type="node" name="Mambo_x_axis" output="screen">
-	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
+	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml"/>
 	<param name="topic_controller" type="str" value="control_effort_pos_X"/>
 	<param name="topic_state" type="str" value="rhinf_st_x"/>
 	<param name="topic_ref" type="str" value="rhinf_ref_x"/>
 </node> 
-<!--<node pkg="ros_rhinf" type="node" name="Mambo_y_axis" output="screen">
+
+<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv_Y" output="screen">
+	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
+	<param name="state_topic" type="str" value="state_pos_Y"/>
+	<param name="reference_topic" type="str" value="setpoint_pos_Y"/>
+	<param name="out_state_topic" type="str" value="rhinf_st_y"/>
+	<param name="out_reference_topic" type="str" value="rhinf_ref_y"/>
+</node>
+
+<node pkg="ros_rhinf" type="node" name="Mambo_y_axis" output="screen">
+	<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_test.yaml" />
 	<param name="topic_controller" type="str" value="control_effort_pos_Y"/>
 	<param name="topic_state" type="str" value="rhinf_st_y"/>
 	<param name="topic_ref" type="str" value="rhinf_ref_y"/>
-</node>--> 
+</node> 
 </launch>

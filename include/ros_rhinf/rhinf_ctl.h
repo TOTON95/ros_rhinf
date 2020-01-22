@@ -38,6 +38,9 @@ namespace rh
 			std::vector<double>& getFMyUNFN();
 			std::vector<double>& getMFMFE();
 
+            //Enable disturbance calculation
+            void enable_dis(bool b);
+
 
 		private:
 			Eigen::MatrixXd an, bn, fn, f, kdis;
@@ -52,7 +55,10 @@ namespace rh
 			double win_width = 50.00;
 			//double a = 0.50;
 			double a = 1.00;
-			double b = 1.00;
+			double b = 0.05;
+
+            //dis
+            bool calculate_disturbance = false;
 
 			//Calculations matrices
 			Eigen::MatrixXd error;

@@ -28,6 +28,7 @@ namespace rh
 			//Callbacks
 			void stateCallback(const std_msgs::Float64MultiArray& state_msg);
 			void refCallback(const std_msgs::Float64MultiArray& ref_msg);
+			void disCallback(const std_msgs::Bool& dis_msg);
 
 			//Template
 			template <typename T, typename A>
@@ -45,6 +46,8 @@ namespace rh
 			double _control_effort = 0;
 			std::vector<double> _reference;
 			bool need_to_refresh = false;
+            /* bool dis_enabled = false; */
+            bool dis_enabled = true;
 			double _downsampling;
 			double _sample_time;
 			double _saturation;
@@ -73,7 +76,7 @@ namespace rh
 
 			//ROS I/O
 			ros::Publisher _control_effort_pub;
-			std::string s_ctl, s_state, s_ref;
+			std::string s_ctl, s_state, s_ref,s_dis;
 
 
 			std_msgs::Float64 ctl_msg;

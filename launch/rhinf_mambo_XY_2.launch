@@ -1,0 +1,14 @@
+<launch>
+<rosparam command="load" file="$(find ros_rhinf)/cfg/XY_sys_2.yaml" />
+<node pkg="ros_rhinf" type="ros_rhinf_conv_node" name="Mambo_axis_conv"/>
+<node pkg="ros_rhinf" type="node" name="Mambo_x_axis" output="screen">
+	<param name="topic_controller" type="str" value="control_effort_pos_X"/>
+	<param name="topic_state" type="str" value="rhinf_st_x"/>
+	<param name="topic_ref" type="str" value="rhinf_ref_x"/>
+</node> 
+<node pkg="ros_rhinf" type="node" name="Mambo_y_axis" output="screen">
+	<param name="topic_controller" type="str" value="control_effort_pos_Y"/>
+	<param name="topic_state" type="str" value="rhinf_st_y"/>
+	<param name="topic_ref" type="str" value="rhinf_ref_y"/>
+</node> 
+</launch>

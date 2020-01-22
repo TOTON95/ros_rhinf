@@ -14,42 +14,42 @@ rhinfObject::rhinfObject()
 	}
 	
 	//Get parameters
-	n_priv.param<double>("/downsampling",_downsampling, 17);
-	n_priv.param<double>("/sample_time", _sample_time,0.01);
-	n_priv.param<double>("/saturation", _saturation, 1);
+	n_priv.param<double>("downsampling",_downsampling, 17);
+	n_priv.param<double>("sample_time", _sample_time,0.01);
+	n_priv.param<double>("saturation", _saturation, 1);
 	n_priv.param<std::string>("topic_controller", s_ctl, "control_effort");
 	n_priv.param<std::string>("topic_state", s_state, "state");
 	n_priv.param<std::string>("topic_ref", s_ref, "reference");
 
-	if(!n_priv.getParam("/AN", an_param) || !n_priv.getParam("/AN_dim", d_an_param))
+	if(!n_priv.getParam("AN", an_param) || !n_priv.getParam("AN_dim", d_an_param))
 	{
 		ROS_ERROR_STREAM("Failed to import AN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/BN", bn_param) || !n_priv.getParam("/BN_dim", d_bn_param))
+	if(!n_priv.getParam("BN", bn_param) || !n_priv.getParam("BN_dim", d_bn_param))
 	{
 		ROS_ERROR_STREAM("Failed to import BN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/FN", fn_param) || !n_priv.getParam("/FN_dim", d_fn_param))
+	if(!n_priv.getParam("FN", fn_param) || !n_priv.getParam("FN_dim", d_fn_param))
 	{
 		ROS_ERROR_STREAM("Failed to import FN parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/F", f_param) || !n_priv.getParam("/F_dim", d_f_param))
+	if(!n_priv.getParam("F", f_param) || !n_priv.getParam("F_dim", d_f_param))
 	{
 		ROS_ERROR_STREAM("Failed to import F parameters. Terminating.");
 		ros::shutdown();
 		exit(EXIT_FAILURE);
 	}
 
-	if(!n_priv.getParam("/KDIS", kdis_param) || !n_priv.getParam("/KDIS_dim", d_kdis_param))
+	if(!n_priv.getParam("KDIS", kdis_param) || !n_priv.getParam("KDIS_dim", d_kdis_param))
 	{
 		ROS_ERROR_STREAM("Failed to import KDIS parameters. Terminating.");
 		ros::shutdown();
@@ -69,8 +69,40 @@ rhinfObject::rhinfObject()
 	//Init publishers and subscribers
 	_control_effort_pub = node.advertise<std_msgs::Float64>(s_ctl, 1);
 
+	//Debug
+//	_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_dis",1);
+//	_disf_pub = node.advertise<std_msgs::Float64MultiArray>("d_disf",1);
+//	_disfant_pub = node.advertise<std_msgs::Float64MultiArray>("d_disfant",1);
+//	_error_pub = node.advertise<std_msgs::Float64MultiArray>("d_error",1);
+//	_error_abs_pub = node.advertise<std_msgs::Float64MultiArray>("d_error_abs",1);
+//	_error_exp_pub = node.advertise<std_msgs::Float64MultiArray>("d_error_exp",1);
+//	_myUN_pub = node.advertise<std_msgs::Float64>("d_myUN",1);
+//	_an_xant_pub = node.advertise<std_msgs::Float64MultiArray>("d_an_xant",1);
+//	_bn_uant_pub = node.advertise<std_msgs::Float64MultiArray>("d_bn_uant",1);
+//	_x_an_xant_pub = node.advertise<std_msgs::Float64MultiArray>("d_x_an_xant",1);
+//	_kdis_dis_pub = node.advertise<std_msgs::Float64MultiArray>("d_kdis_dis",1);
+//	_myUN_fn_pub = node.advertise<std_msgs::Float64MultiArray>("d_myUN_fn",1);
+//	_f_myUN_fn_pub = node.advertise<std_msgs::Float64MultiArray>("d_f_myUN_fn",1);
+//	_m_fmf_e_pub = node.advertise<std_msgs::Float64MultiArray>("d_m_fmf_e",1);
+
+	_dis_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_dis",1);
+	_disf_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_disf",1);
+	_disfant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_disfant",1);
+	_error_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_error",1);
+	_error_abs_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_error_abs",1);
+	_error_exp_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_error_exp",1);
+	_myUN_pub = n_priv.advertise<std_msgs::Float64>("d_myUN",1);
+	_an_xant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_an_xant",1);
+	_bn_uant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_bn_uant",1);
+	_x_an_xant_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_x_an_xant",1);
+	_kdis_dis_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_kdis_dis",1);
+	_myUN_fn_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_myUN_fn",1);
+	_f_myUN_fn_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_f_myUN_fn",1);
+	_m_fmf_e_pub = n_priv.advertise<std_msgs::Float64MultiArray>("d_m_fmf_e",1);
+
 	ros::Subscriber state_sub = node.subscribe(s_state, 1, &rhinfObject::stateCallback, this);
 	ros::Subscriber ref_sub = node.subscribe(s_ref, 1, &rhinfObject::refCallback, this);
+	ros::Subscriber dis_sub = node.subscribe("dis_enable", 1, &rhinfObject::disCallback, this);
 
 	if(!state_sub || !ref_sub)
 	{
@@ -155,13 +187,121 @@ void rhinfObject::calc()
 		//Updating controller
 		double output = ctl.update(m_state, m_ref, _it);
 
+        //Enable disturbance estimation?
+        ctl.enable_dis(dis_enabled);
+
+		//DEBUG
+		std::vector<double> vec;
+//		dis_out.layout.dim.push_back(std_msgs::MultiArrayDimension());
+//		dis_out.layout.dim[0].size = vec.size();
+//		dis_out.layout.dim[0].stride = 1;
+
+        if(dis_enabled)
+        {
+            //DIS
+            vec = ctl.getDis();
+            dis_out.data.clear();
+            dis_out.data.insert(dis_out.data.end(), vec.begin(), vec.end());
+
+            //DISF
+            vec = ctl.getDisf();
+            disf_out.data.clear();
+            disf_out.data.insert(disf_out.data.end(), vec.begin(), vec.end());
+
+            //DISFANT
+            vec = ctl.getDisfant();
+            disfant_out.data.clear();
+            disfant_out.data.insert(disfant_out.data.end(), vec.begin(), vec.end());
+
+        }
+		//ERROR
+		vec = ctl.getError();
+		error_out.data.clear();
+		error_out.data.insert(error_out.data.end(), vec.begin(), vec.end());
+		
+		//ERROR ABS
+		vec = ctl.getErrorAbs();
+		error_abs_out.data.clear();
+		error_abs_out.data.insert(error_abs_out.data.end(), vec.begin(), vec.end());
+		
+		//ERROR EXP
+		vec = ctl.getErrorExp();
+		error_exp_out.data.clear();
+		error_exp_out.data.insert(error_exp_out.data.end(), vec.begin(), vec.end());
+		
+		//MYUN
+		myUN_out.data = ctl.getMyUN();
+		
+		//ANXANT
+		vec = ctl.getANXANT();
+		an_xant_out.data.clear();
+		an_xant_out.data.insert(an_xant_out.data.end(), vec.begin(), vec.end());
+		
+		//BNUANT
+		vec = ctl.getBNUANT();
+		bn_uant_out.data.clear();
+		bn_uant_out.data.insert(bn_uant_out.data.end(), vec.begin(), vec.end());
+
+        //XANXANT
+        vec = ctl.getXANXANT();
+        x_an_xant_out.data.clear();
+        x_an_xant_out.data.insert(x_an_xant_out.data.end(), vec.begin(), vec.end());
+
+
+        if(dis_enabled)
+        {
+
+            //KDISDIS
+            vec = ctl.getKDISDIS();
+            kdis_dis_out.data.clear();
+            kdis_dis_out.data.insert(kdis_dis_out.data.end(), vec.begin(), vec.end());
+
+        }
+
+		//MyUNFN
+		vec = ctl.getMyUNFN();
+		myUN_fn_out.data.clear();
+		myUN_fn_out.data.insert(myUN_fn_out.data.end(), vec.begin(), vec.end());
+		
+		//FMyUNFN
+		vec = ctl.getFMyUNFN();
+		f_myUN_fn_out.data.clear();
+		f_myUN_fn_out.data.insert(f_myUN_fn_out.data.end(), vec.begin(), vec.end());
+		
+		//MFMFE
+		vec = ctl.getMFMFE();
+		m_fmf_e_out.data.clear();
+		m_fmf_e_out.data.insert(m_fmf_e_out.data.end(), vec.begin(), vec.end());
+		
+
 		exec_t = ros::Time::now();
 
-		//std::cout<<"Output: "<<output<<std::endl;
+	//	std::cout<<"Output: "<<output<<std::endl;
 
 		//Send output signal
 		ctl_msg.data = output;
 		_control_effort_pub.publish(ctl_msg);
+
+
+		//DEBUG
+        if(dis_enabled)
+        {
+            _dis_pub.publish(dis_out);
+            _disf_pub.publish(disf_out);
+            _disfant_pub.publish(disfant_out);
+            _kdis_dis_pub.publish(kdis_dis_out);
+        }
+        
+        _error_pub.publish(error_out);
+		_error_abs_pub.publish(error_abs_out);
+		_error_exp_pub.publish(error_exp_out);
+		_myUN_pub.publish(myUN_out);
+		_an_xant_pub.publish(an_xant_out);
+		_bn_uant_pub.publish(bn_uant_out);
+		_x_an_xant_pub.publish(x_an_xant_out);
+		_myUN_fn_pub.publish(myUN_fn_out);
+		_f_myUN_fn_pub.publish(f_myUN_fn_out);
+		_m_fmf_e_pub.publish(m_fmf_e_out);
 			
 		//std::cout<<"exec_t: "<<exec_t.toSec()-init_t.toSec()<<std::endl;
 		sleep_t = sampling_t - (exec_t - init_t);
@@ -285,4 +425,8 @@ void rhinfObject::refCallback(const std_msgs::Float64MultiArray& ref_msg)
 {
 	_reference = ref_msg.data;
 	need_to_refresh = true;
+}
+void rhinfObject::disCallback(const std_msgs::Bool& dis_msg)
+{
+	dis_enabled = dis_msg.data;
 }
